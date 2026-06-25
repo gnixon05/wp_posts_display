@@ -18,10 +18,12 @@ capabilities on top:
 2. A configurable, **AJAX-driven filter bar** supporting any taxonomy on the
    queried post type plus a keyword search.
 
-It registers a WPBakery element (`vc_map`, gated on `function_exists('vc_map')`)
-**and** an equivalent `[dynamic_post_grid]` shortcode, so it is usable inside or
-outside WPBakery. Everything is namespaced under `dpg-` and CSS custom
-properties are scoped to the component root — no `:root`, no Salient collisions.
+It registers a WPBakery element (`vc_map`, gated on `function_exists('vc_map')`),
+a Gutenberg block (`dpg/post-grid`, server-rendered), **and** an equivalent
+`[dynamic_post_grid]` shortcode — all three sharing one render path — so it is
+usable inside or outside WPBakery. Everything is namespaced under `dpg-` and CSS
+custom properties are scoped to the component root — no `:root`, no Salient
+collisions.
 
 ## Feature summary
 
@@ -58,9 +60,13 @@ dynamic-post-grid/
     class-ajax.php               # nonce'd admin-ajax endpoints (filter + load-more)
     class-shortcode.php          # [dynamic_post_grid]
     class-wpbakery.php           # vc_map registration (guarded)
+    class-block.php              # Gutenberg dynamic block (guarded)
+  block/
+    block.json                   # block metadata + attributes
   assets/
     css/dynamic-post-grid.css    # scoped, variable-driven; includes Education preset
     js/dynamic-post-grid.js      # vanilla; filter + load-more + infinite + carousel
+    js/dpg-block.js              # no-build editor script (InspectorControls + SSR)
   templates/
     card-classic.php  card-overlay.php  card-minimal.php
     card-magazine.php  card-education.php
@@ -68,8 +74,9 @@ dynamic-post-grid/
 ```
 
 A single shared render path (`DPG_Render`) produces the markup for the initial
-server render, the load-more append, and the filter AJAX replace — so there are
-no divergent markup paths.
+server render, the load-more append, the filter AJAX replace, **and** the
+WPBakery / Gutenberg / shortcode entry points — so there are no divergent markup
+paths.
 
 ## Build notes / assumptions
 
@@ -84,9 +91,9 @@ in the build environment); adjust any and the relevant option flips:
    layout is the classic grid.
 3. **First-pass target** — `post` with `category` + `post_tag` pre-wired as
    example filter taxonomies (most portable for testing on any site).
-4. **Integration priority** — shortcode → WPBakery → Gutenberg (Gutenberg
-   wrapper not included in 1.0.0; the shortcode works inside a Gutenberg
-   shortcode block).
+4. **Integration priority** — shortcode → WPBakery → Gutenberg. All three ship:
+   the shortcode, the WPBakery `vc_map` element, and a server-rendered Gutenberg
+   block (`dpg/post-grid`) added in 1.1.0.
 
 The two reference URLs (`themenectar.com/salient/...` and
 `texascensus.org/education/`) could not be fetched from the build environment —

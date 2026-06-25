@@ -4,7 +4,7 @@ Tags: post grid, wpbakery, salient, filter, ajax, taxonomy, carousel, masonry
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,8 +20,9 @@ element and adds two capabilities on top:
 * A configurable, AJAX-driven **filter bar** supporting any taxonomy on the
   queried post type plus a keyword search.
 
-It registers a WPBakery (js_composer) element via `vc_map()` *and* an equivalent
-`[dynamic_post_grid]` shortcode, so it works whether or not the page is built in
+It registers a WPBakery (js_composer) element via `vc_map()`, a Gutenberg block
+(`dpg/post-grid`) *and* an equivalent `[dynamic_post_grid]` shortcode — all three
+sharing one server render path — so it works whether or not the page is built in
 WPBakery. Everything is namespaced under a `dpg-` prefix and CSS custom
 properties are scoped to the component root, so it coexists cleanly with the
 Salient theme and renders (unstyled-but-functional) on any theme.
@@ -53,6 +54,10 @@ In WPBakery: add the **Dynamic Post Grid** element from the Content category and
 configure it through the params panel (Source, Layout, Card Content, Pagination,
 Filter Bar tabs).
 
+In the block editor (Gutenberg): add the **Dynamic Post Grid** block (Widgets
+category). It shows a live server-rendered preview and exposes the same options
+in the block sidebar.
+
 == Security ==
 
 All AJAX/REST traffic is nonce-protected; inputs are sanitised, term IDs cast to
@@ -60,6 +65,10 @@ int, and taxonomy/orderby values whitelisted. Output is escaped. The element
 config that travels to AJAX is fully re-sanitised server-side on every request.
 
 == Changelog ==
+
+= 1.1.0 =
+* Add a dynamic Gutenberg block (`dpg/post-grid`) with a live ServerSideRender
+  preview and full InspectorControls, delegating to the shared render path.
 
 = 1.0.0 =
 * Initial release: query builder, shared render layer, five card styles incl.

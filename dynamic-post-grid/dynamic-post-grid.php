@@ -3,7 +3,7 @@
  * Plugin Name:       Dynamic Post Grid + Filter
  * Plugin URI:        https://github.com/gnixon05/wp_posts_display
  * Description:        Renders posts, pages or any post type in a configurable grid with multiple card styles, an "Education / Featured Magazine" preset, and an optional AJAX multi-criteria filter bar. Registers a WPBakery element and an equivalent [dynamic_post_grid] shortcode. Coexists cleanly with the Salient theme.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Requires at least: 5.6
  * Requires PHP:      7.2
  * Author:            gnixon05
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /* -------------------------------------------------------------------------
  * Constants
  * ---------------------------------------------------------------------- */
-define( 'DPG_VERSION', '1.0.0' );
+define( 'DPG_VERSION', '1.1.0' );
 define( 'DPG_FILE', __FILE__ );
 define( 'DPG_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DPG_URL', plugin_dir_url( __FILE__ ) );
@@ -39,6 +39,7 @@ require_once DPG_DIR . 'includes/class-assets.php';
 require_once DPG_DIR . 'includes/class-ajax.php';
 require_once DPG_DIR . 'includes/class-shortcode.php';
 require_once DPG_DIR . 'includes/class-wpbakery.php';
+require_once DPG_DIR . 'includes/class-block.php';
 
 /**
  * Main plugin bootstrap.
@@ -87,6 +88,7 @@ final class DPG_Plugin {
 		DPG_Ajax::init();
 		DPG_Shortcode::init();
 		DPG_WPBakery::init();
+		DPG_Block::init();
 	}
 }
 
