@@ -4,7 +4,7 @@ Tags: post grid, wpbakery, salient, filter, ajax, taxonomy, carousel, masonry
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +66,19 @@ config that travels to AJAX is fully re-sanitised server-side on every request.
 
 == Changelog ==
 
+= 1.2.0 =
+* Education preset redesigned to match the reference grid: even, centred cards
+  with a "Category | Month Year" meta line, centred title/excerpt and a navy
+  "Learn more" pill button (no forced hero item).
+* Fix: featured images now use an absolute-fill technique so themes that force
+  `img { height: auto !important }` (e.g. Salient) can no longer collapse them.
+* Fix: excerpts now generate from page-builder content (WPBakery `[vc_*]`) by
+  stripping shortcode brackets but keeping the inner text.
+* New: configurable card corner radius (`card_radius`).
+* Filter bar: more compact, keyword search right-aligned, the Clear control on
+  its own line above the filters, and configurable bar/field colours
+  (`filter_bg`, `filter_text`, `filter_field_bg`, `filter_field_text`).
+
 = 1.1.0 =
 * Add a dynamic Gutenberg block (`dpg/post-grid`) with a live ServerSideRender
   preview and full InspectorControls, delegating to the shared render path.
@@ -76,6 +89,6 @@ config that travels to AJAX is fully re-sanitised server-side on every request.
 
 == Notes ==
 
-The Education preset markup mirrors the standard featured-magazine composition
-and is fully driven by `--dpg-edu-*` scoped CSS variables for easy pixel-tuning
-against a live reference.
+The Education preset reproduces the texascensus.org/education grid (even, centred
+cards with category/date meta and a "Learn more" pill) and is fully driven by the
+`--dpg-edu-*` scoped CSS variables for easy pixel-tuning.
