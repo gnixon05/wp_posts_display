@@ -601,13 +601,13 @@
 .dpg .dpg-search-input {
 	width: 100%;
 	min-width: 170px;
-	padding: 10px;
-	padding-right: 40px; /* room for the magnifier button */
+	padding: 10px !important;
+	padding-right: 40px !important; /* room for the magnifier button */
 	font-size: 0.82rem !important;
 	color: #1c2230 !important; /* dark text so it stays readable while typing */
 	background: #ffffff !important;
 	border: 1px solid var(--dpg-pill-border) !important;
-	border-radius: var(--dpg-pill-radius);
+	border-radius: var(--dpg-pill-radius) !important;
 }
 .dpg .dpg-search-input::placeholder {
 	color: #6b7280;
@@ -630,12 +630,12 @@ body .dpg .dpg-filter-bar .dpg-filter-row .dpg-search-input + button[type="submi
 	height: 28px;
 	min-height: 0;
 	margin: 0;
-	padding: 0;
+	padding: 0 !important;
 	color: #1c2230;
 	background: transparent;
 	border: 0;
 	box-shadow: none;
-	border-radius: 50%;
+	border-radius: 50% !important;
 	cursor: pointer;
 }
 body .dpg .dpg-filter-bar .dpg-filter-row .dpg-search-input + button[type="submit"].dpg-search-btn:hover {
