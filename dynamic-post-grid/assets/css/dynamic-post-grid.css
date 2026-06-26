@@ -4,7 +4,7 @@
  * and all custom properties are scoped to the component root (no :root), so
  * nothing leaks into or collides with the Salient theme.
  *
- * Version: 1.2.2
+ * Version: 1.2.3
  */
 
 /* -------------------------------------------------------------------------
@@ -586,9 +586,9 @@
 	padding: 10px 30px 10px 13px;
 	font-size: 0.82rem;
 	line-height: 1.3;
-	color: var(--dpg-pill-text);
-	background: var(--dpg-pill-bg);
-	border: 1px solid var(--dpg-pill-border);
+	color: var(--dpg-pill-text) !important;
+	background: var(--dpg-pill-bg) !important;
+	border: 1px solid var(--dpg-pill-border) !important;
 	border-radius: var(--dpg-pill-radius);
 	appearance: none;
 	-webkit-appearance: none;
@@ -610,13 +610,16 @@
 	padding: 10px !important;
 	padding-right: 40px !important; /* room for the magnifier button */
 	font-size: 0.82rem !important;
-	color: #1c2230 !important; /* dark text so it stays readable while typing */
-	background: #ffffff !important;
+	/* Use the configurable field vars (with !important so they beat theme CSS)
+	 * so the "Field background/text color" controls actually drive this input. */
+	color: var(--dpg-pill-text) !important;
+	background: var(--dpg-pill-bg) !important;
 	border: 1px solid var(--dpg-pill-border) !important;
 	border-radius: var(--dpg-pill-radius) !important;
 }
 .dpg .dpg-search-input::placeholder {
-	color: #6b7280;
+	color: var(--dpg-bar-muted);
+	opacity: 0.85;
 }
 .dpg .dpg-search-input:focus-visible {
 	outline: 2px solid var(--dpg-bar-accent);
@@ -637,7 +640,7 @@ body .dpg .dpg-filter-bar .dpg-filter-row .dpg-search-input + button[type="submi
 	min-height: 0;
 	margin: 0;
 	padding: 0 !important;
-	color: #1c2230;
+	color: var(--dpg-pill-text);
 	background: transparent;
 	border: 0;
 	box-shadow: none;

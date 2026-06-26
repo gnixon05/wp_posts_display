@@ -7,7 +7,7 @@
  * front-end markup is produced by the PHP render_callback (DPG_Render::render),
  * so the block shares the shortcode/WPBakery render path.
  *
- * Version: 1.2.2
+ * Version: 1.2.3
  */
 ( function ( wp ) {
 	'use strict';
@@ -170,10 +170,10 @@
 				( a.filter_enable && a.filter_search ) ? ctl.text( __( 'Search label', 'dynamic-post-grid' ), 'filter_search_label' ) : null,
 				a.filter_enable ? ctl.select( __( 'Term scope', 'dynamic-post-grid' ), 'filter_terms_scope', OPT.termsScope ) : null,
 				a.filter_enable ? ctl.select( __( 'Apply mode', 'dynamic-post-grid' ), 'filter_apply', OPT.applyMode ) : null,
-				a.filter_enable ? ctl.text( __( 'Bar background colour (hex)', 'dynamic-post-grid' ), 'filter_bg', __( 'e.g. #1f2430. Blank = default.', 'dynamic-post-grid' ) ) : null,
-				a.filter_enable ? ctl.text( __( 'Bar text colour (hex)', 'dynamic-post-grid' ), 'filter_text' ) : null,
-				a.filter_enable ? ctl.text( __( 'Field background colour (hex)', 'dynamic-post-grid' ), 'filter_field_bg' ) : null,
-				a.filter_enable ? ctl.text( __( 'Field text colour (hex)', 'dynamic-post-grid' ), 'filter_field_text' ) : null
+				a.filter_enable ? ctl.text( __( 'Bar background color (hex)', 'dynamic-post-grid' ), 'filter_bg', __( 'e.g. #1f2430. Blank = default.', 'dynamic-post-grid' ) ) : null,
+				a.filter_enable ? ctl.text( __( 'Bar text color (hex)', 'dynamic-post-grid' ), 'filter_text' ) : null,
+				a.filter_enable ? ctl.text( __( 'Field background color (hex)', 'dynamic-post-grid' ), 'filter_field_bg' ) : null,
+				a.filter_enable ? ctl.text( __( 'Field text color (hex)', 'dynamic-post-grid' ), 'filter_field_text' ) : null
 			)
 		);
 

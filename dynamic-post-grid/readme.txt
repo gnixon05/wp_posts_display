@@ -4,7 +4,7 @@ Tags: post grid, wpbakery, salient, filter, ajax, taxonomy, carousel, masonry
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,13 @@ int, and taxonomy/orderby values whitelisted. Output is escaped. The element
 config that travels to AJAX is fully re-sanitised server-side on every request.
 
 == Changelog ==
+
+= 1.2.3 =
+* Fix: the "Field background color" / "Field text color" controls now actually
+  drive the keyword search input (it previously had a hard-coded white/dark
+  style that ignored them). Selects and search now both follow the configurable
+  field colours via scoped vars with !important so they survive theme CSS.
+* Renamed the filter colour controls to American spelling ("color").
 
 = 1.2.2 =
 * Filter bar: all fields (dropdowns and search) now share one consistent width

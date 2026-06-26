@@ -460,7 +460,7 @@ class DPG_WPBakery {
 			),
 			array(
 				'type'        => 'colorpicker',
-				'heading'     => __( 'Bar background colour', 'dynamic-post-grid' ),
+				'heading'     => __( 'Bar background color', 'dynamic-post-grid' ),
 				'param_name'  => 'filter_bg',
 				'value'       => '',
 				'description' => __( 'Leave blank for the default dark bar.', 'dynamic-post-grid' ),
@@ -469,7 +469,7 @@ class DPG_WPBakery {
 			),
 			array(
 				'type'       => 'colorpicker',
-				'heading'    => __( 'Bar label/text colour', 'dynamic-post-grid' ),
+				'heading'    => __( 'Bar label/text color', 'dynamic-post-grid' ),
 				'param_name' => 'filter_text',
 				'value'      => '',
 				'dependency' => array( 'element' => 'filter_enable', 'not_empty' => true ),
@@ -477,7 +477,7 @@ class DPG_WPBakery {
 			),
 			array(
 				'type'        => 'colorpicker',
-				'heading'     => __( 'Field background colour', 'dynamic-post-grid' ),
+				'heading'     => __( 'Field background color', 'dynamic-post-grid' ),
 				'param_name'  => 'filter_field_bg',
 				'value'       => '',
 				'description' => __( 'Dropdowns and the search box.', 'dynamic-post-grid' ),
@@ -486,7 +486,7 @@ class DPG_WPBakery {
 			),
 			array(
 				'type'       => 'colorpicker',
-				'heading'    => __( 'Field text colour', 'dynamic-post-grid' ),
+				'heading'    => __( 'Field text color', 'dynamic-post-grid' ),
 				'param_name' => 'filter_field_text',
 				'value'      => '',
 				'dependency' => array( 'element' => 'filter_enable', 'not_empty' => true ),
