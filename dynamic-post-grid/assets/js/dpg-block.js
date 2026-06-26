@@ -7,7 +7,7 @@
  * front-end markup is produced by the PHP render_callback (DPG_Render::render),
  * so the block shares the shortcode/WPBakery render path.
  *
- * Version: 1.1.0
+ * Version: 1.2.0
  */
 ( function ( wp ) {
 	'use strict';
@@ -141,7 +141,8 @@
 				ctl.number( __( 'Columns (desktop)', 'dynamic-post-grid' ), 'columns', 1, 5 ),
 				ctl.number( __( 'Columns (tablet)', 'dynamic-post-grid' ), 'columns_tablet', 1, 4 ),
 				ctl.number( __( 'Columns (mobile)', 'dynamic-post-grid' ), 'columns_mobile', 1, 3 ),
-				ctl.number( __( 'Gap (px)', 'dynamic-post-grid' ), 'gap', 0, 80 )
+				ctl.number( __( 'Gap (px)', 'dynamic-post-grid' ), 'gap', 0, 80 ),
+				ctl.number( __( 'Card corner radius (px)', 'dynamic-post-grid' ), 'card_radius', 0, 60 )
 			),
 			el( PanelBody, { title: __( 'Card Content', 'dynamic-post-grid' ), initialOpen: false },
 				ctl.toggle( __( 'Featured image', 'dynamic-post-grid' ), 'show_image' ),
@@ -168,7 +169,11 @@
 				a.filter_enable ? ctl.toggle( __( 'Keyword search', 'dynamic-post-grid' ), 'filter_search' ) : null,
 				( a.filter_enable && a.filter_search ) ? ctl.text( __( 'Search label', 'dynamic-post-grid' ), 'filter_search_label' ) : null,
 				a.filter_enable ? ctl.select( __( 'Term scope', 'dynamic-post-grid' ), 'filter_terms_scope', OPT.termsScope ) : null,
-				a.filter_enable ? ctl.select( __( 'Apply mode', 'dynamic-post-grid' ), 'filter_apply', OPT.applyMode ) : null
+				a.filter_enable ? ctl.select( __( 'Apply mode', 'dynamic-post-grid' ), 'filter_apply', OPT.applyMode ) : null,
+				a.filter_enable ? ctl.text( __( 'Bar background colour (hex)', 'dynamic-post-grid' ), 'filter_bg', __( 'e.g. #1f2430. Blank = default.', 'dynamic-post-grid' ) ) : null,
+				a.filter_enable ? ctl.text( __( 'Bar text colour (hex)', 'dynamic-post-grid' ), 'filter_text' ) : null,
+				a.filter_enable ? ctl.text( __( 'Field background colour (hex)', 'dynamic-post-grid' ), 'filter_field_bg' ) : null,
+				a.filter_enable ? ctl.text( __( 'Field text colour (hex)', 'dynamic-post-grid' ), 'filter_field_text' ) : null
 			)
 		);
 

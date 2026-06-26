@@ -83,6 +83,7 @@ class DPG_Query {
 			'columns_tablet' => 2,
 			'columns_mobile' => 1,
 			'gap'            => 30,
+			'card_radius'    => 10, // px corner radius for cards.
 			'mode'           => 'grid', // grid | carousel.
 
 			// Card content / meta toggles.
@@ -112,6 +113,12 @@ class DPG_Query {
 			'filter_terms_scope' => 'used', // used | all.
 			'filter_apply'       => 'live', // live | submit.
 			'filter_search_label'=> '',
+
+			// Filter bar appearance (scoped colours; blank = use stylesheet default).
+			'filter_bg'          => '', // bar background.
+			'filter_text'        => '', // label / muted text colour.
+			'filter_field_bg'    => '', // dropdown / search background.
+			'filter_field_text'  => '', // dropdown / search text colour.
 		);
 	}
 
@@ -153,6 +160,7 @@ class DPG_Query {
 		$atts['columns_tablet'] = min( 5, max( 1, (int) $atts['columns_tablet'] ) );
 		$atts['columns_mobile'] = min( 3, max( 1, (int) $atts['columns_mobile'] ) );
 		$atts['gap']            = min( 120, max( 0, (int) $atts['gap'] ) );
+		$atts['card_radius']    = min( 60, max( 0, (int) $atts['card_radius'] ) );
 		$atts['mode']           = ( 'carousel' === $atts['mode'] ) ? 'carousel' : 'grid';
 
 		// Toggles.
@@ -177,6 +185,11 @@ class DPG_Query {
 		$atts['filter_taxonomies']   = self::clean_taxonomies( $atts['filter_taxonomies'], $atts['post_type'] );
 		$atts['filter_labels']       = sanitize_text_field( $atts['filter_labels'] );
 		$atts['filter_search_label'] = sanitize_text_field( $atts['filter_search_label'] );
+
+		// Filter colours: accept hex (#rgb / #rrggbb) only; blank otherwise.
+		foreach ( array( 'filter_bg', 'filter_text', 'filter_field_bg', 'filter_field_text' ) as $color ) {
+			$atts[ $color ] = self::color( $atts[ $color ] );
+		}
 
 		return $atts;
 	}
@@ -328,6 +341,21 @@ class DPG_Query {
 			return $v;
 		}
 		return in_array( strtolower( (string) $v ), array( '1', 'yes', 'true', 'on' ), true );
+	}
+
+	/**
+	 * Sanitise a colour value to a hex colour, or empty string when invalid.
+	 *
+	 * @param mixed $v Raw value.
+	 * @return string '' or a #hex colour.
+	 */
+	public static function color( $v ) {
+		$v = trim( (string) $v );
+		if ( '' === $v ) {
+			return '';
+		}
+		$hex = sanitize_hex_color( $v );
+		return $hex ? $hex : '';
 	}
 
 	/**

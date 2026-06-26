@@ -158,7 +158,9 @@ class DPG_Render {
 	 * @return array
 	 */
 	public static function card_data( $atts, $post, $index = 0 ) {
-		$is_featured = in_array( $atts['style'], array( 'magazine', 'education' ), true ) && 0 === (int) $index;
+		// Only the Magazine layout promotes the first item to a wide hero. The
+		// Education preset uses an even grid of equal cards (matches the design).
+		$is_featured = ( 'magazine' === $atts['style'] ) && 0 === (int) $index;
 
 		// Featured items in magazine/education layouts read better with a larger crop.
 		$image_size = $atts['image_size'];
@@ -176,6 +178,7 @@ class DPG_Render {
 			'has_image'   => false,
 			'excerpt'     => '',
 			'date'        => '',
+			'date_compact'=> '',
 			'datetime'    => '',
 			'author'      => '',
 			'author_url'  => '',
@@ -205,8 +208,9 @@ class DPG_Render {
 
 		// Date.
 		if ( 'yes' === $atts['show_date'] ) {
-			$card['date']     = get_the_date( '', $post );
-			$card['datetime'] = get_the_date( 'c', $post );
+			$card['date']         = get_the_date( '', $post );
+			$card['date_compact'] = get_the_date( 'F Y', $post ); // e.g. "June 2026" (Education meta).
+			$card['datetime']     = get_the_date( 'c', $post );
 		}
 
 		// Author + avatar.
@@ -386,8 +390,15 @@ class DPG_Render {
 		if ( has_excerpt( $post ) ) {
 			$text = get_the_excerpt( $post );
 		} else {
-			$text = strip_shortcodes( $post->post_content );
+			// Build from raw content. NOTE: strip_shortcodes() would delete the
+			// *content* of page-builder shortcodes (e.g. WPBakery [vc_*]) entirely,
+			// leaving pages with no preview text — so strip only the bracket tokens
+			// and keep the inner text.
+			$text = (string) $post->post_content;
+			$text = preg_replace( '/\[[^\]]*\]/', ' ', $text );
 			$text = wp_strip_all_tags( $text );
+			$text = preg_replace( '/\s+/', ' ', $text );
+			$text = trim( $text );
 		}
 		$text = wp_trim_words( $text, (int) $length, '&hellip;' );
 		return $text;
@@ -440,7 +451,24 @@ class DPG_Render {
 			'--dpg-columns-tablet' => (int) $atts['columns_tablet'],
 			'--dpg-columns-mobile' => (int) $atts['columns_mobile'],
 			'--dpg-gap'            => (int) $atts['gap'] . 'px',
+			'--dpg-card-radius'    => (int) $atts['card_radius'] . 'px',
 		);
+
+		// Optional filter-bar colour overrides (already hex-sanitised).
+		if ( $atts['filter_bg'] ) {
+			$vars['--dpg-bar-bg'] = $atts['filter_bg'];
+		}
+		if ( $atts['filter_text'] ) {
+			$vars['--dpg-bar-text']  = $atts['filter_text'];
+			$vars['--dpg-bar-muted'] = $atts['filter_text'];
+		}
+		if ( $atts['filter_field_bg'] ) {
+			$vars['--dpg-pill-bg'] = $atts['filter_field_bg'];
+		}
+		if ( $atts['filter_field_text'] ) {
+			$vars['--dpg-pill-text'] = $atts['filter_field_text'];
+		}
+
 		$out = '';
 		foreach ( $vars as $k => $v ) {
 			$out .= $k . ':' . $v . ';';
