@@ -47,6 +47,122 @@ Shortcode:
 In WPBakery: add the **Dynamic Post Grid** element (Content category) and use the
 params panel.
 
+## Installation (end-to-end)
+
+### Requirements
+
+| | Minimum | Notes |
+| --- | --- | --- |
+| WordPress | 5.6+ | The Gutenberg block needs **5.8+** (block.json metadata API). On older cores the block is skipped gracefully; the shortcode and WPBakery element still work. |
+| PHP | 7.2+ | Tested on PHP 8.4. |
+| Build tools | none | No `npm`/Composer/webpack step — the plugin ships ready to run. |
+| WPBakery Page Builder | optional | Only needed for the visual element; registration is gated on `vc_map()`. |
+| Salient theme | optional | Not required — the plugin renders on any theme. |
+
+> The plugin code lives in the [`dynamic-post-grid/`](dynamic-post-grid/)
+> subdirectory of this repo. WordPress expects a plugin's main file at the top of
+> its own folder, so whichever method you use, the installed path must be
+> `wp-content/plugins/dynamic-post-grid/dynamic-post-grid.php`.
+
+### Option A — Upload a packaged zip (recommended)
+
+Build a zip whose **top-level folder is `dynamic-post-grid`**, then upload it:
+
+```bash
+git clone https://github.com/gnixon05/wp_posts_display.git
+cd wp_posts_display
+zip -r dynamic-post-grid.zip dynamic-post-grid -x '*.git*' '*.DS_Store'
+```
+
+In `wp-admin`: **Plugins → Add New → Upload Plugin** → choose
+`dynamic-post-grid.zip` → **Install Now** → **Activate**.
+
+### Option B — Copy into wp-content/plugins (FTP / SFTP / SSH)
+
+Copy just the `dynamic-post-grid` directory onto the server:
+
+```bash
+# from a local clone of this repo
+rsync -av dynamic-post-grid/ \
+  user@server:/var/www/html/wp-content/plugins/dynamic-post-grid/
+```
+
+Then activate under **Plugins** in `wp-admin` (or with WP-CLI, below).
+
+### Option C — WP-CLI
+
+```bash
+# from a built zip (installs + activates in one step)
+wp plugin install /path/to/dynamic-post-grid.zip --activate
+
+# …or, if you already copied the folder into wp-content/plugins:
+wp plugin activate dynamic-post-grid
+```
+
+### Option D — Git clone directly on the server
+
+```bash
+cd wp-content/plugins
+git clone https://github.com/gnixon05/wp_posts_display.git wp_posts_display
+# expose the plugin folder at the expected path (copy is most host-compatible):
+cp -r wp_posts_display/dynamic-post-grid ./dynamic-post-grid
+wp plugin activate dynamic-post-grid
+```
+
+(Symlinking `dynamic-post-grid → wp_posts_display/dynamic-post-grid` works on
+most hosts but is rejected by some; copying/moving is the safe default.)
+
+### Activation
+
+Activate **Dynamic Post Grid + Filter** on the Plugins screen. Activation only
+flushes rewrite rules (reserved for a future REST route) — **no database tables
+or options are created**.
+
+### Verify the install (2-minute smoke test)
+
+1. Create a post or page and add this shortcode:
+   ```text
+   [dynamic_post_grid post_type="post" posts_per_page="6" columns="3" pagination="loadmore"]
+   ```
+2. View the page — you should see a 3-column grid of your latest posts and a
+   working **Load more** button.
+3. Add the filter bar and confirm AJAX filtering:
+   ```text
+   [dynamic_post_grid filter_enable="yes" filter_taxonomies="category,post_tag" pagination="loadmore"]
+   ```
+   Changing a dropdown or typing in **Search** updates results without a page
+   reload; the active filters appear in the URL (shareable). With JavaScript
+   disabled it falls back to a normal `GET` form submit.
+4. (Optional) In the block editor, add the **Dynamic Post Grid** block (Widgets
+   category) and confirm the live preview renders; in WPBakery, add the
+   **Dynamic Post Grid** element (Content category).
+
+### Updating
+
+Replace the `dynamic-post-grid` folder with the newer version, or re-upload the
+zip (WordPress prompts to replace). The `DPG_VERSION` constant versions the CSS/JS
+handles, so asset caches bust automatically on upgrade.
+
+### Uninstalling
+
+Deactivate, then delete, on the Plugins screen — or:
+
+```bash
+wp plugin deactivate dynamic-post-grid && wp plugin delete dynamic-post-grid
+```
+
+Because the plugin stores no options or custom tables, removal leaves no residue.
+
+### Troubleshooting
+
+| Symptom | Likely cause / fix |
+| --- | --- |
+| Grid renders unstyled | Assets enqueue **only** on pages that actually contain the element/shortcode/block. Confirm the shortcode/block is present and not inside a cached fragment. |
+| Block missing in the editor | Requires WP **5.8+**. On older cores use the shortcode or WPBakery element. |
+| WPBakery element missing | Ensure WPBakery (`js_composer`) is active — registration is gated on `function_exists('vc_map')`. |
+| AJAX filter returns nothing or 403 | A full-page cache may be stripping the nonce. Exclude `admin-ajax.php` from caching, or hard-refresh to get a fresh nonce. |
+| No posts shown | Check the `post_type`/term filters and that matching published posts exist. |
+
 ## Architecture
 
 ```

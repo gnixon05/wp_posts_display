@@ -44,6 +44,54 @@ Salient theme and renders (unstyled-but-functional) on any theme.
   on-submit apply, debounced keyword input, reset/clear, and URL sync for
   shareable / back-button friendly results. No-JS fallback submits as GET.
 
+== Installation ==
+
+Requirements: WordPress 5.6+ (the Gutenberg block needs 5.8+; it is skipped
+gracefully on older cores while the shortcode and WPBakery element keep working),
+PHP 7.2+. No build step. WPBakery and the Salient theme are both optional.
+
+The installed plugin must live at
+`wp-content/plugins/dynamic-post-grid/dynamic-post-grid.php`.
+
+= From the WordPress admin (zip) =
+
+1. Obtain a zip whose top-level folder is `dynamic-post-grid`. From the source
+   repository you can build one with:
+   `zip -r dynamic-post-grid.zip dynamic-post-grid -x '*.git*'`
+2. In wp-admin go to Plugins -> Add New -> Upload Plugin.
+3. Choose the zip, click Install Now, then Activate.
+
+= Manual (FTP/SFTP/SSH) =
+
+1. Copy the `dynamic-post-grid` directory into `wp-content/plugins/`.
+2. Go to Plugins in wp-admin and activate "Dynamic Post Grid + Filter".
+
+= WP-CLI =
+
+* From a zip: `wp plugin install /path/to/dynamic-post-grid.zip --activate`
+* Already copied in: `wp plugin activate dynamic-post-grid`
+
+= After activation =
+
+Activation only flushes rewrite rules; no database tables or options are created.
+
+Smoke test: add `[dynamic_post_grid posts_per_page="6" columns="3"
+pagination="loadmore"]` to any page and confirm a grid with a working Load more
+button renders. Add `filter_enable="yes" filter_taxonomies="category,post_tag"`
+to confirm AJAX filtering (dropdowns/search update results without reload; with
+JS off it falls back to a normal GET submit).
+
+= Updating =
+
+Replace the `dynamic-post-grid` folder (or re-upload the zip). The version
+constant busts CSS/JS caches automatically.
+
+= Uninstalling =
+
+Deactivate then Delete on the Plugins screen, or
+`wp plugin deactivate dynamic-post-grid && wp plugin delete dynamic-post-grid`.
+No options or tables are left behind.
+
 == Usage ==
 
 Shortcode:
