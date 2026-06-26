@@ -4,7 +4,7 @@ Tags: post grid, wpbakery, salient, filter, ajax, taxonomy, carousel, masonry
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,15 @@ int, and taxonomy/orderby values whitelisted. Output is escaped. The element
 config that travels to AJAX is fully re-sanitised server-side on every request.
 
 == Changelog ==
+
+= 1.2.1 =
+* Filter bar polish: readable dark search-input text on white with !important
+  guards (font-size/border/label), padding tweaks, higher-specificity search
+  button selector to survive theme button styles, and Clear spacing fix.
+* Education: tighter "Learn more" button (padding/size).
+* Featured images: !important on width/height to fully defeat theme overrides.
+* Excerpts: strip leading headings and a "Category | Month YYYY" header line (or
+  a repeated post title) so previews start at the body copy.
 
 = 1.2.0 =
 * Education preset redesigned to match the reference grid: even, centred cards
