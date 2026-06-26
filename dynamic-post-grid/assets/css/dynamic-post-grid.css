@@ -4,7 +4,7 @@
  * and all custom properties are scoped to the component root (no :root), so
  * nothing leaks into or collides with the Salient theme.
  *
- * Version: 1.2.0
+ * Version: 1.2.1
  */
 
 /* -------------------------------------------------------------------------
@@ -139,8 +139,8 @@
 	display: block;
 	position: absolute;
 	inset: 0;
-	width: 100%;
-	height: 100%;
+	width: 100% !important;
+	height: 100% !important;
 	max-width: 100%;
 	margin: 0;
 	padding: 0;
@@ -406,8 +406,8 @@
 .dpg .dpg-edu-btn {
 	display: inline-block;
 	margin-top: 6px;
-	padding: 13px 30px;
-	font-size: 0.78rem;
+	padding: 8px 24px;
+	font-size: 0.68rem;
 	font-weight: 700;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
@@ -531,7 +531,6 @@
 .dpg .dpg-filter-top {
 	display: flex;
 	justify-content: flex-end;
-	margin-bottom: 10px;
 }
 .dpg .dpg-filter-row {
 	display: flex;
@@ -553,8 +552,8 @@
 	justify-content: flex-end;
 }
 .dpg .dpg-filter-label {
-	font-size: 0.66rem;
-	font-weight: 600;
+	font-size: 0.66rem !important;
+	font-weight: 600 !important;
 	letter-spacing: 0.05em;
 	text-transform: uppercase;
 	color: var(--dpg-bar-muted);
@@ -602,21 +601,24 @@
 .dpg .dpg-search-input {
 	width: 100%;
 	min-width: 170px;
-	padding: 8px 38px 8px 13px;
-	font-size: 0.82rem;
-	color: var(--dpg-pill-text);
-	background: var(--dpg-pill-bg);
-	border: 1px solid var(--dpg-pill-border);
+	padding: 10px;
+	padding-right: 40px; /* room for the magnifier button */
+	font-size: 0.82rem !important;
+	color: #1c2230 !important; /* dark text so it stays readable while typing */
+	background: #ffffff !important;
+	border: 1px solid var(--dpg-pill-border) !important;
 	border-radius: var(--dpg-pill-radius);
 }
 .dpg .dpg-search-input::placeholder {
-	color: var(--dpg-bar-muted);
+	color: #6b7280;
 }
 .dpg .dpg-search-input:focus-visible {
 	outline: 2px solid var(--dpg-bar-accent);
 	outline-offset: 1px;
 }
-.dpg .dpg-search-btn {
+/* High-specificity selector so the in-field submit button survives conflicting
+ * theme button styles. */
+body .dpg .dpg-filter-bar .dpg-filter-row .dpg-search-input + button[type="submit"].dpg-search-btn {
 	position: absolute;
 	right: 5px;
 	top: 50%;
@@ -626,15 +628,19 @@
 	justify-content: center;
 	width: 28px;
 	height: 28px;
+	min-height: 0;
+	margin: 0;
 	padding: 0;
-	color: var(--dpg-pill-text);
+	color: #1c2230;
 	background: transparent;
 	border: 0;
+	box-shadow: none;
 	border-radius: 50%;
 	cursor: pointer;
 }
-.dpg .dpg-search-btn:hover {
+body .dpg .dpg-filter-bar .dpg-filter-row .dpg-search-input + button[type="submit"].dpg-search-btn:hover {
 	color: var(--dpg-bar-accent);
+	background: transparent;
 }
 .dpg .dpg-filter-apply {
 	padding: 8px 16px;

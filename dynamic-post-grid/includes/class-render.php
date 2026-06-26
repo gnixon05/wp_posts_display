@@ -390,16 +390,45 @@ class DPG_Render {
 		if ( has_excerpt( $post ) ) {
 			$text = get_the_excerpt( $post );
 		} else {
-			// Build from raw content. NOTE: strip_shortcodes() would delete the
-			// *content* of page-builder shortcodes (e.g. WPBakery [vc_*]) entirely,
-			// leaving pages with no preview text — so strip only the bracket tokens
-			// and keep the inner text.
 			$text = (string) $post->post_content;
+
+			// Drop heading/script/style blocks first so an obvious header or
+			// repeated title at the top of the content doesn't bleed into the
+			// preview (e.g. "EVENT RECAP | October 2025 The Philanthropy…").
+			$text = preg_replace( '#<h[1-6][^>]*>.*?</h[1-6]>#is', ' ', $text );
+			$text = preg_replace( '#<(script|style)[^>]*>.*?</\1>#is', ' ', $text );
+
+			// NOTE: strip_shortcodes() would delete the *content* of page-builder
+			// shortcodes (e.g. WPBakery [vc_*]) entirely, leaving pages with no
+			// preview text — so strip only the bracket tokens and keep inner text.
 			$text = preg_replace( '/\[[^\]]*\]/', ' ', $text );
 			$text = wp_strip_all_tags( $text );
 			$text = preg_replace( '/\s+/', ' ', $text );
 			$text = trim( $text );
+
+			// If the content still begins with a "CATEGORY | Month YYYY" style
+			// header line (common when builders render meta as plain text), drop it.
+			$text = preg_replace(
+				'/^[\p{L}\p{N}&,\'\-\/ ]{2,40}\s*[|·\x{2022}\-]\s*(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\s*/u',
+				'',
+				$text
+			);
+
+			// If it still leads with the exact post title, strip that too.
+			$title = trim( wp_strip_all_tags( get_the_title( $post ) ) );
+			if ( '' !== $title && 0 === stripos( $text, $title ) ) {
+				$text = trim( substr( $text, strlen( $title ) ) );
+			}
 		}
+
+		/**
+		 * Filter the cleaned excerpt source before it is trimmed to length.
+		 *
+		 * @param string  $text Cleaned text.
+		 * @param WP_Post $post Post.
+		 */
+		$text = apply_filters( 'dpg_excerpt_source', $text, $post );
+
 		$text = wp_trim_words( $text, (int) $length, '&hellip;' );
 		return $text;
 	}
