@@ -46,6 +46,8 @@ $dpg_has_date  = ( 'yes' === $atts['show_date'] && $card['date_compact'] );
 				</div>
 			<?php endif; ?>
 
+			<?php echo DPG_Render::tax_pills( $card ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
+
 			<?php if ( 'yes' === $atts['show_title'] && $card['title'] ) : ?>
 				<h3 class="dpg-edu-title"><?php echo esc_html( $card['title'] ); ?></h3>
 			<?php endif; ?>

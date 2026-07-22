@@ -18,6 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<span class="dpg-term-badge dpg-term-badge--inline"><?php echo esc_html( $card['term']->name ); ?></span>
 		<?php endif; ?>
 
+		<?php echo DPG_Render::tax_pills( $card ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
+
 		<?php if ( 'yes' === $atts['show_title'] && $card['title'] ) : ?>
 			<h3 class="dpg-card-title">
 				<a href="<?php echo esc_url( $card['permalink'] ); ?>"><?php echo esc_html( $card['title'] ); ?></a>

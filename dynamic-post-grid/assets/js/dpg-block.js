@@ -7,7 +7,7 @@
  * front-end markup is produced by the PHP render_callback (DPG_Render::render),
  * so the block shares the shortcode/WPBakery render path.
  *
- * Version: 1.2.3
+ * Version: 1.2.4
  */
 ( function ( wp ) {
 	'use strict';
@@ -154,6 +154,8 @@
 				ctl.toggle( __( 'Author', 'dynamic-post-grid' ), 'show_author' ),
 				a.show_author ? ctl.toggle( __( 'Author avatar', 'dynamic-post-grid' ), 'show_avatar' ) : null,
 				ctl.toggle( __( 'Category / term badge', 'dynamic-post-grid' ), 'show_category' ),
+				ctl.toggle( __( 'Taxonomy pills', 'dynamic-post-grid' ), 'show_taxonomies' ),
+				a.show_taxonomies ? ctl.text( __( 'Pill taxonomies', 'dynamic-post-grid' ), 'taxonomies', __( 'Comma list of taxonomy slugs. Blank = filter taxonomies.', 'dynamic-post-grid' ) ) : null,
 				ctl.toggle( __( 'Read more link', 'dynamic-post-grid' ), 'show_readmore' ),
 				a.show_readmore ? ctl.text( __( 'Read more text', 'dynamic-post-grid' ), 'readmore_text' ) : null,
 				ctl.select( __( 'Hover effect', 'dynamic-post-grid' ), 'hover', OPT.hover )

@@ -185,6 +185,7 @@ class DPG_Render {
 			'avatar'      => '',
 			'term'        => null,
 			'term_url'    => '',
+			'tax_pills'   => array(),
 			'card_class'  => 'dpg-card dpg-card--' . $atts['style'],
 		);
 
@@ -234,6 +235,13 @@ class DPG_Render {
 			}
 		}
 
+		// Taxonomy pills — the post's terms in the "filter option" taxonomies,
+		// so visitors can see which values exist. Defaults to the filter bar's
+		// taxonomies unless an explicit list is supplied.
+		if ( 'yes' === $atts['show_taxonomies'] ) {
+			$card['tax_pills'] = self::tax_pill_data( $post, $atts );
+		}
+
 		/**
 		 * Filter the prepared card data before it reaches the template.
 		 *
@@ -253,6 +261,74 @@ class DPG_Render {
 	public static function readmore_text( $atts ) {
 		$text = $atts['readmore_text'] ? $atts['readmore_text'] : __( 'Read more', 'dynamic-post-grid' );
 		return $text;
+	}
+
+	/**
+	 * Collect the taxonomy-pill data for a post: its terms across the configured
+	 * taxonomies (defaulting to the filter bar's taxonomies).
+	 *
+	 * @param WP_Post $post Post.
+	 * @param array   $atts Attributes.
+	 * @return array[] Each: name, url, taxonomy, slug.
+	 */
+	public static function tax_pill_data( $post, $atts ) {
+		if ( $atts['taxonomies'] ) {
+			$taxes = array_filter( array_map( 'sanitize_key', explode( ',', $atts['taxonomies'] ) ) );
+		} else {
+			// "The filter options": mirror the filter bar's taxonomies.
+			$taxes = DPG_Filter::resolve_taxonomies( $atts );
+		}
+
+		$pills = array();
+		foreach ( $taxes as $tax ) {
+			if ( ! taxonomy_exists( $tax ) ) {
+				continue;
+			}
+			$terms = get_the_terms( $post, $tax );
+			if ( ! $terms || is_wp_error( $terms ) ) {
+				continue;
+			}
+			foreach ( $terms as $term ) {
+				$url = get_term_link( $term );
+				$pills[] = array(
+					'name'     => $term->name,
+					'url'      => is_wp_error( $url ) ? '' : $url,
+					'taxonomy' => $tax,
+					'slug'     => $term->slug,
+				);
+			}
+		}
+
+		/**
+		 * Filter the taxonomy pills for a card (e.g. to cap or reorder them).
+		 *
+		 * @param array[] $pills Pill descriptors.
+		 * @param WP_Post $post  Post.
+		 * @param array   $atts  Attributes.
+		 */
+		return apply_filters( 'dpg_card_tax_pills', $pills, $post, $atts );
+	}
+
+	/**
+	 * Render the taxonomy pills markup for a card. Returns '' when there are none.
+	 *
+	 * @param array $card Prepared card data.
+	 * @return string
+	 */
+	public static function tax_pills( $card ) {
+		if ( empty( $card['tax_pills'] ) ) {
+			return '';
+		}
+		$out = '<div class="dpg-tax-pills">';
+		foreach ( $card['tax_pills'] as $pill ) {
+			if ( ! empty( $pill['url'] ) ) {
+				$out .= '<a class="dpg-tax-pill" href="' . esc_url( $pill['url'] ) . '">' . esc_html( $pill['name'] ) . '</a>';
+			} else {
+				$out .= '<span class="dpg-tax-pill">' . esc_html( $pill['name'] ) . '</span>';
+			}
+		}
+		$out .= '</div>';
+		return $out;
 	}
 
 	/* ----------------------------------------------------------------- *
