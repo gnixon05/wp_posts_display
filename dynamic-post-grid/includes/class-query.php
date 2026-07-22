@@ -97,6 +97,8 @@ class DPG_Query {
 			'show_author'    => 'no',
 			'show_avatar'    => 'no',
 			'show_category'  => 'yes',
+			'show_taxonomies'=> 'no', // show taxonomy-term pills on each card.
+			'taxonomies'     => '',   // which taxonomies (blank = the filter taxonomies).
 			'show_readmore'  => 'no',
 			'readmore_text'  => '',
 			'hover'          => 'zoom',
@@ -164,11 +166,12 @@ class DPG_Query {
 		$atts['mode']           = ( 'carousel' === $atts['mode'] ) ? 'carousel' : 'grid';
 
 		// Toggles.
-		foreach ( array( 'show_image', 'show_title', 'show_excerpt', 'show_date', 'show_author', 'show_avatar', 'show_category', 'show_readmore' ) as $flag ) {
+		foreach ( array( 'show_image', 'show_title', 'show_excerpt', 'show_date', 'show_author', 'show_avatar', 'show_category', 'show_taxonomies', 'show_readmore' ) as $flag ) {
 			$atts[ $flag ] = self::bool( $atts[ $flag ] ) ? 'yes' : 'no';
 		}
 		$atts['image_size']     = sanitize_text_field( $atts['image_size'] );
 		$atts['fallback_image'] = sanitize_text_field( $atts['fallback_image'] );
+		$atts['taxonomies']     = self::clean_taxonomies( $atts['taxonomies'], $atts['post_type'] );
 		$atts['excerpt_length'] = max( 0, (int) $atts['excerpt_length'] );
 		$atts['readmore_text']  = sanitize_text_field( $atts['readmore_text'] );
 		$atts['hover']          = in_array( $atts['hover'], self::allowed_hover(), true ) ? $atts['hover'] : 'none';

@@ -341,6 +341,22 @@ class DPG_WPBakery {
 			),
 			array(
 				'type'       => 'checkbox',
+				'heading'    => __( 'Taxonomy pills', 'dynamic-post-grid' ),
+				'param_name' => 'show_taxonomies',
+				'value'      => array( __( 'Show', 'dynamic-post-grid' ) => 'yes' ),
+				'group'      => $group_content,
+			),
+			array(
+				'type'        => 'checkbox',
+				'heading'     => __( 'Pill taxonomies', 'dynamic-post-grid' ),
+				'param_name'  => 'taxonomies',
+				'value'       => self::taxonomy_options(),
+				'description' => __( 'Which taxonomies to show as pills. Leave empty to use the filter bar taxonomies.', 'dynamic-post-grid' ),
+				'dependency'  => array( 'element' => 'show_taxonomies', 'not_empty' => true ),
+				'group'       => $group_content,
+			),
+			array(
+				'type'       => 'checkbox',
 				'heading'    => __( 'Read more link', 'dynamic-post-grid' ),
 				'param_name' => 'show_readmore',
 				'value'      => array( __( 'Show', 'dynamic-post-grid' ) => 'yes' ),
