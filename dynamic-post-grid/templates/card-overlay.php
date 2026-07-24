@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <article class="<?php echo esc_attr( $card['card_class'] ); ?>" role="listitem">
-	<a class="dpg-card-link" href="<?php echo esc_url( $card['permalink'] ); ?>">
+	<div class="dpg-card-link">
 		<div class="dpg-card-media">
 			<?php
 			if ( $card['has_image'] ) {
@@ -25,6 +25,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<span class="dpg-card-scrim" aria-hidden="true"></span>
 		</div>
 		<div class="dpg-card-overlay-body">
+			<?php // Stretched cover link makes the whole card navigate; real links (pills) sit above it. ?>
+			<a class="dpg-card-cover" href="<?php echo esc_url( $card['permalink'] ); ?>" aria-label="<?php echo esc_attr( $card['title'] ); ?>"></a>
+
 			<?php if ( $card['term'] ) : ?>
 				<span class="dpg-term-badge"><?php echo esc_html( $card['term']->name ); ?></span>
 			<?php endif; ?>
@@ -50,5 +53,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="dpg-card-excerpt"><?php echo esc_html( $card['excerpt'] ); ?></div>
 			<?php endif; ?>
 		</div>
-	</a>
+	</div>
 </article>

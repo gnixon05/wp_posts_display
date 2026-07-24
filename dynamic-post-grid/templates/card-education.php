@@ -19,19 +19,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$dpg_btn_label = $atts['readmore_text'] ? $atts['readmore_text'] : __( 'Learn more', 'dynamic-post-grid' );
-$dpg_has_cat   = ( 'yes' === $atts['show_category'] && $card['term'] );
-$dpg_has_date  = ( 'yes' === $atts['show_date'] && $card['date_compact'] );
+$dpg_btn_label   = $atts['readmore_text'] ? $atts['readmore_text'] : __( 'Learn more', 'dynamic-post-grid' );
+$dpg_has_cat     = ( 'yes' === $atts['show_category'] && $card['term'] );
+$dpg_has_date    = ( 'yes' === $atts['show_date'] && $card['date_compact'] );
+$dpg_cover_label = $card['title'] ? $card['title'] : $dpg_btn_label;
 ?>
 <article class="<?php echo esc_attr( $card['card_class'] ); ?>" role="listitem">
-	<a class="dpg-edu-link" href="<?php echo esc_url( $card['permalink'] ); ?>">
+	<div class="dpg-edu-link">
 		<?php if ( $card['has_image'] ) : ?>
-			<div class="dpg-edu-media">
+			<a class="dpg-edu-media" href="<?php echo esc_url( $card['permalink'] ); ?>" tabindex="-1" aria-hidden="true">
 				<?php echo $card['image']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP image markup. ?>
-			</div>
+			</a>
 		<?php endif; ?>
 
 		<div class="dpg-edu-body">
+			<?php // Stretched cover link makes the text region navigate to the post; real links (pills) sit above it. ?>
+			<a class="dpg-card-cover" href="<?php echo esc_url( $card['permalink'] ); ?>" aria-label="<?php echo esc_attr( $dpg_cover_label ); ?>"></a>
+
 			<?php if ( $dpg_has_cat || $dpg_has_date ) : ?>
 				<div class="dpg-edu-meta">
 					<?php if ( $dpg_has_cat ) : ?>
@@ -58,5 +62,5 @@ $dpg_has_date  = ( 'yes' === $atts['show_date'] && $card['date_compact'] );
 
 			<span class="dpg-edu-btn"><?php echo esc_html( $dpg_btn_label ); ?></span>
 		</div>
-	</a>
+	</div>
 </article>
