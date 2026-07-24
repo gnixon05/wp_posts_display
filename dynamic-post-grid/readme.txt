@@ -4,7 +4,7 @@ Tags: post grid, wpbakery, salient, filter, ajax, taxonomy, carousel, masonry
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +114,12 @@ int, and taxonomy/orderby values whitelisted. Output is escaped. The element
 config that travels to AJAX is fully re-sanitised server-side on every request.
 
 == Changelog ==
+
+= 1.3.1 =
+* New "Filter selection" option: choose multi-select (checkboxes, several terms)
+  or single select (radios, one term) per element. Defaults to multi-select.
+* Raised the filter dropdown panel's z-index so it always sits above adjacent
+  page content.
 
 = 1.3.0 =
 * Filter taxonomies are now multi-select: each filter is a compact dropdown of

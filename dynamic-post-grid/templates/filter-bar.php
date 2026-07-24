@@ -58,11 +58,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<span class="dpg-ms-value" data-dpg-ms-value><?php echo esc_html( $dpg_summary ); ?></span>
 							<span class="dpg-ms-caret" aria-hidden="true"></span>
 						</summary>
+						<?php $dpg_input_type = ! empty( $multiselect ) ? 'checkbox' : 'radio'; ?>
 						<div class="dpg-ms-panel" role="group" aria-labelledby="<?php echo esc_attr( $dpg_field_id . '-lbl' ); ?>">
+							<?php if ( empty( $multiselect ) ) : ?>
+								<label class="dpg-ms-option">
+									<input
+										type="radio"
+										name="<?php echo esc_attr( $dd['name'] ); ?>[]"
+										value=""
+										data-dpg-taxonomy="<?php echo esc_attr( $dd['taxonomy'] ); ?>"
+										<?php checked( empty( $dpg_selected ) ); ?>
+									/>
+									<span class="dpg-ms-option-label"><?php esc_html_e( 'All', 'dynamic-post-grid' ); ?></span>
+								</label>
+							<?php endif; ?>
 							<?php foreach ( $dd['terms'] as $term ) : ?>
 								<label class="dpg-ms-option">
 									<input
-										type="checkbox"
+										type="<?php echo esc_attr( $dpg_input_type ); ?>"
 										name="<?php echo esc_attr( $dd['name'] ); ?>[]"
 										value="<?php echo esc_attr( $term->term_id ); ?>"
 										data-dpg-taxonomy="<?php echo esc_attr( $dd['taxonomy'] ); ?>"

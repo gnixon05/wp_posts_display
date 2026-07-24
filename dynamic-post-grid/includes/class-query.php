@@ -112,6 +112,7 @@ class DPG_Query {
 			'filter_taxonomies'  => '', // comma list of taxonomy slugs.
 			'filter_labels'      => '', // "tax:Label, tax2:Label2".
 			'filter_search'      => 'yes',
+			'filter_multiselect' => 'yes', // yes = multi (checkboxes), no = single (radios).
 			'filter_terms_scope' => 'used', // used | all.
 			'filter_apply'       => 'live', // live | submit.
 			'filter_search_label'=> '',
@@ -183,6 +184,7 @@ class DPG_Query {
 		// Filter bar.
 		$atts['filter_enable']       = self::bool( $atts['filter_enable'] ) ? 'yes' : 'no';
 		$atts['filter_search']       = self::bool( $atts['filter_search'] ) ? 'yes' : 'no';
+		$atts['filter_multiselect']  = self::bool( $atts['filter_multiselect'] ) ? 'yes' : 'no';
 		$atts['filter_terms_scope']  = ( 'all' === $atts['filter_terms_scope'] ) ? 'all' : 'used';
 		$atts['filter_apply']        = ( 'submit' === $atts['filter_apply'] ) ? 'submit' : 'live';
 		$atts['filter_taxonomies']   = self::clean_taxonomies( $atts['filter_taxonomies'], $atts['post_type'] );

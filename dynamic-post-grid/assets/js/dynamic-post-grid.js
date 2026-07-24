@@ -6,7 +6,7 @@
  * no re-binding. Progressive enhancement: with JS off, the filter bar submits
  * as a normal GET form and pagination falls back to links.
  *
- * Version: 1.3.0
+ * Version: 1.3.1
  */
 (function () {
 	'use strict';
@@ -85,8 +85,13 @@
 			});
 
 			this.form.addEventListener('change', function (e) {
-				if (e.target && e.target.matches('input[type="checkbox"][data-dpg-taxonomy]')) {
-					self.updateSummary(e.target.closest('[data-dpg-ms]'));
+				if (e.target && e.target.matches('input[data-dpg-taxonomy]')) {
+					var ms = e.target.closest('[data-dpg-ms]');
+					self.updateSummary(ms);
+					// Single-select (radio): the choice is made, so close the panel.
+					if (ms && e.target.type === 'radio') {
+						ms.open = false;
+					}
 					if (self.applyMode === 'live') {
 						self.applyFilters();
 					}
@@ -128,11 +133,12 @@
 		var filters = {};
 		var s = '';
 		if (this.form) {
-			// Multi-select: gather every checked term, grouped by taxonomy.
-			var boxes = this.form.querySelectorAll('input[type="checkbox"][data-dpg-taxonomy]:checked');
+			// Gather every checked term (checkbox or radio), grouped by taxonomy.
+			// The single-select "All" radio has an empty value and is skipped.
+			var boxes = this.form.querySelectorAll('input[data-dpg-taxonomy]:checked');
 			boxes.forEach(function (box) {
 				var tax = box.getAttribute('data-dpg-taxonomy');
-				if (!tax) {
+				if (!tax || box.value === '') {
 					return;
 				}
 				if (!filters[tax]) {
@@ -159,7 +165,10 @@
 		if (!valueEl) {
 			return;
 		}
-		var checked = ms.querySelectorAll('input[type="checkbox"][data-dpg-taxonomy]:checked');
+		// Count only real selections (skip the single-select "All" radio).
+		var checked = Array.prototype.slice.call(
+			ms.querySelectorAll('input[data-dpg-taxonomy]:checked')
+		).filter(function (b) { return b.value !== ''; });
 		var n = checked.length;
 		var text;
 		if (n === 0) {
@@ -257,8 +266,9 @@
 
 	Instance.prototype.reset = function () {
 		if (this.form) {
-			this.form.querySelectorAll('input[type="checkbox"][data-dpg-taxonomy]').forEach(function (box) {
-				box.checked = false;
+			this.form.querySelectorAll('input[data-dpg-taxonomy]').forEach(function (box) {
+				// Radios reset to their "All" (empty-value) option; checkboxes clear.
+				box.checked = ( 'radio' === box.type && '' === box.value );
 			});
 			var search = this.form.querySelector('[data-dpg-search]');
 			if (search) {

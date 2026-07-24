@@ -7,7 +7,7 @@
  * front-end markup is produced by the PHP render_callback (DPG_Render::render),
  * so the block shares the shortcode/WPBakery render path.
  *
- * Version: 1.3.0
+ * Version: 1.3.1
  */
 ( function ( wp ) {
 	'use strict';
@@ -168,6 +168,7 @@
 				ctl.toggle( __( 'Enable filter bar', 'dynamic-post-grid' ), 'filter_enable' ),
 				a.filter_enable ? ctl.text( __( 'Filter taxonomies', 'dynamic-post-grid' ), 'filter_taxonomies', __( 'Comma list of taxonomy slugs. Empty = auto.', 'dynamic-post-grid' ) ) : null,
 				a.filter_enable ? ctl.text( __( 'Custom labels', 'dynamic-post-grid' ), 'filter_labels', __( 'taxonomy:Label, taxonomy2:Label2', 'dynamic-post-grid' ) ) : null,
+				a.filter_enable ? ctl.toggle( __( 'Multi-select filters', 'dynamic-post-grid' ), 'filter_multiselect' ) : null,
 				a.filter_enable ? ctl.toggle( __( 'Keyword search', 'dynamic-post-grid' ), 'filter_search' ) : null,
 				( a.filter_enable && a.filter_search ) ? ctl.text( __( 'Search label', 'dynamic-post-grid' ), 'filter_search_label' ) : null,
 				a.filter_enable ? ctl.select( __( 'Term scope', 'dynamic-post-grid' ), 'filter_terms_scope', OPT.termsScope ) : null,
