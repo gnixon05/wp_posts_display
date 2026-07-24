@@ -463,6 +463,19 @@ class DPG_WPBakery {
 				'group'      => $group_filter,
 			),
 			array(
+				'type'        => 'dropdown',
+				'heading'     => __( 'Filter selection', 'dynamic-post-grid' ),
+				'param_name'  => 'filter_multiselect',
+				'value'       => array(
+					__( 'Multi-select (multiple terms)', 'dynamic-post-grid' ) => 'yes',
+					__( 'Single select (one term)', 'dynamic-post-grid' )      => 'no',
+				),
+				'std'         => 'yes',
+				'description' => __( 'Whether visitors can choose several terms per filter or just one.', 'dynamic-post-grid' ),
+				'dependency'  => array( 'element' => 'filter_enable', 'not_empty' => true ),
+				'group'       => $group_filter,
+			),
+			array(
 				'type'       => 'dropdown',
 				'heading'    => __( 'Apply mode', 'dynamic-post-grid' ),
 				'param_name' => 'filter_apply',

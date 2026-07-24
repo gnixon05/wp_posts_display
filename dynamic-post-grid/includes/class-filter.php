@@ -68,6 +68,7 @@ class DPG_Filter {
 		ob_start();
 		$show_search = ( 'yes' === $atts['filter_search'] );
 		$apply_mode  = $atts['filter_apply'];
+		$multiselect = ( 'yes' === $atts['filter_multiselect'] );
 		include DPG_DIR . 'templates/filter-bar.php';
 		return ob_get_clean();
 	}

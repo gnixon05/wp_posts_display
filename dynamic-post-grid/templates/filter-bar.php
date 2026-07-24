@@ -27,29 +27,65 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="dpg-filter-row">
 
-			<?php foreach ( $dropdowns as $dd ) : ?>
+			<?php
+			foreach ( $dropdowns as $dd ) :
+				$dpg_selected = array_map( 'intval', (array) $dd['selected'] );
+				$dpg_count    = count( $dpg_selected );
+
+				// Summary text shown on the closed control.
+				if ( 0 === $dpg_count ) {
+					$dpg_summary = __( 'All', 'dynamic-post-grid' );
+				} elseif ( 1 === $dpg_count ) {
+					$dpg_summary = __( 'All', 'dynamic-post-grid' );
+					foreach ( $dd['terms'] as $dpg_t ) {
+						if ( (int) $dpg_t->term_id === $dpg_selected[0] ) {
+							$dpg_summary = $dpg_t->name;
+							break;
+						}
+					}
+				} else {
+					/* translators: %d: number of selected filter options. */
+					$dpg_summary = sprintf( __( '%d selected', 'dynamic-post-grid' ), $dpg_count );
+				}
+				$dpg_field_id = $instance_id . '-' . $dd['name'];
+				?>
 				<div class="dpg-filter-group dpg-filter-group--tax">
-					<label class="dpg-filter-label" for="<?php echo esc_attr( $instance_id . '-' . $dd['name'] ); ?>">
+					<label class="dpg-filter-label" id="<?php echo esc_attr( $dpg_field_id . '-lbl' ); ?>">
 						<?php echo esc_html( $dd['label'] ); ?>
 					</label>
-					<div class="dpg-select-wrap">
-						<select
-							class="dpg-select"
-							id="<?php echo esc_attr( $instance_id . '-' . $dd['name'] ); ?>"
-							name="<?php echo esc_attr( $dd['name'] ); ?>"
-							data-dpg-taxonomy="<?php echo esc_attr( $dd['taxonomy'] ); ?>"
-						>
-							<option value=""><?php esc_html_e( 'All', 'dynamic-post-grid' ); ?></option>
+					<details class="dpg-ms" data-dpg-ms data-dpg-taxonomy="<?php echo esc_attr( $dd['taxonomy'] ); ?>">
+						<summary class="dpg-ms-toggle" role="button" aria-haspopup="listbox" aria-labelledby="<?php echo esc_attr( $dpg_field_id . '-lbl' ); ?>">
+							<span class="dpg-ms-value" data-dpg-ms-value><?php echo esc_html( $dpg_summary ); ?></span>
+							<span class="dpg-ms-caret" aria-hidden="true"></span>
+						</summary>
+						<?php $dpg_input_type = ! empty( $multiselect ) ? 'checkbox' : 'radio'; ?>
+						<div class="dpg-ms-panel" role="group" aria-labelledby="<?php echo esc_attr( $dpg_field_id . '-lbl' ); ?>">
+							<?php if ( empty( $multiselect ) ) : ?>
+								<label class="dpg-ms-option">
+									<input
+										type="radio"
+										name="<?php echo esc_attr( $dd['name'] ); ?>[]"
+										value=""
+										data-dpg-taxonomy="<?php echo esc_attr( $dd['taxonomy'] ); ?>"
+										<?php checked( empty( $dpg_selected ) ); ?>
+									/>
+									<span class="dpg-ms-option-label"><?php esc_html_e( 'All', 'dynamic-post-grid' ); ?></span>
+								</label>
+							<?php endif; ?>
 							<?php foreach ( $dd['terms'] as $term ) : ?>
-								<option
-									value="<?php echo esc_attr( $term->term_id ); ?>"
-									<?php selected( in_array( (int) $term->term_id, $dd['selected'], true ) ); ?>
-								>
-									<?php echo esc_html( $term->name ); ?>
-								</option>
+								<label class="dpg-ms-option">
+									<input
+										type="<?php echo esc_attr( $dpg_input_type ); ?>"
+										name="<?php echo esc_attr( $dd['name'] ); ?>[]"
+										value="<?php echo esc_attr( $term->term_id ); ?>"
+										data-dpg-taxonomy="<?php echo esc_attr( $dd['taxonomy'] ); ?>"
+										<?php checked( in_array( (int) $term->term_id, $dpg_selected, true ) ); ?>
+									/>
+									<span class="dpg-ms-option-label"><?php echo esc_html( $term->name ); ?></span>
+								</label>
 							<?php endforeach; ?>
-						</select>
-					</div>
+						</div>
+					</details>
 				</div>
 			<?php endforeach; ?>
 

@@ -4,7 +4,7 @@
  * and all custom properties are scoped to the component root (no :root), so
  * nothing leaks into or collides with the Salient theme.
  *
- * Version: 1.2.4
+ * Version: 1.3.2
  */
 
 /* -------------------------------------------------------------------------
@@ -168,6 +168,7 @@
 	flex-direction: column;
 	gap: 8px;
 	padding: 18px 20px 22px;
+	flex: 1 1 auto; /* fill the card so a bottom-pinned read-more can reach the base */
 }
 
 .dpg .dpg-card-title {
@@ -257,7 +258,8 @@ a.dpg-tax-pill:hover {
 }
 
 .dpg .dpg-card-readmore {
-	margin-top: 4px;
+	margin-top: auto; /* pin to the bottom of the card body */
+	padding-top: 4px;
 	align-self: flex-start;
 	font-size: 0.85rem;
 	font-weight: 600;
@@ -443,7 +445,7 @@ a.dpg-tax-pill:hover {
 }
 .dpg .dpg-edu-btn {
 	display: inline-block;
-	margin-top: 6px;
+	margin-top: auto; /* pin the button to the bottom; content stays top-aligned */
 	padding: 8px 24px;
 	font-size: 0.68rem;
 	font-weight: 700;
@@ -602,11 +604,45 @@ a.dpg-tax-pill:hover {
 	text-transform: uppercase;
 	color: var(--dpg-bar-muted);
 }
-.dpg .dpg-select-wrap {
+/* -------------------------------------------------------------------------
+ * Multi-select taxonomy control (<details> + checkboxes; no-JS friendly)
+ * ---------------------------------------------------------------------- */
+.dpg .dpg-ms {
 	position: relative;
+	width: 100%;
 }
-.dpg .dpg-select-wrap::after {
+.dpg .dpg-ms-toggle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	width: 100%;
+	padding: 10px 30px 10px 13px;
+	font-size: 0.82rem;
+	line-height: 1.3;
+	color: var(--dpg-pill-text);
+	background: var(--dpg-pill-bg);
+	border: 1px solid var(--dpg-pill-border);
+	border-radius: var(--dpg-pill-radius);
+	cursor: pointer;
+	list-style: none;
+	position: relative;
+	white-space: nowrap;
+	overflow: hidden;
+}
+/* Remove the native disclosure marker. */
+.dpg .dpg-ms-toggle::-webkit-details-marker {
+	display: none;
+}
+.dpg .dpg-ms-toggle::marker {
 	content: "";
+}
+.dpg .dpg-ms-value {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.dpg .dpg-ms-caret {
 	position: absolute;
 	right: 13px;
 	top: 50%;
@@ -616,25 +652,59 @@ a.dpg-tax-pill:hover {
 	border-right: 2px solid var(--dpg-bar-muted);
 	border-bottom: 2px solid var(--dpg-bar-muted);
 	transform: rotate(45deg);
+	transition: transform var(--dpg-transition);
 	pointer-events: none;
 }
-.dpg .dpg-select {
-	width: 100%;
-	padding: 10px 30px 10px 13px;
-	font-size: 0.82rem;
-	line-height: 1.3;
-	color: var(--dpg-pill-text) !important;
-	background: var(--dpg-pill-bg) !important;
-	border: 1px solid var(--dpg-pill-border) !important;
-	border-radius: var(--dpg-pill-radius);
-	appearance: none;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	cursor: pointer;
+.dpg .dpg-ms[open] .dpg-ms-caret {
+	transform: rotate(-135deg);
+	margin-top: -2px;
 }
-.dpg .dpg-select:focus-visible {
+.dpg .dpg-ms-toggle:focus-visible {
 	outline: 2px solid var(--dpg-bar-accent);
 	outline-offset: 1px;
+}
+.dpg .dpg-ms.has-selection .dpg-ms-toggle {
+	border-color: var(--dpg-bar-accent);
+}
+.dpg .dpg-ms-panel {
+	position: absolute;
+	z-index: 9999;
+	top: calc(100% + 6px);
+	left: 0;
+	right: 0;
+	max-height: 260px;
+	overflow-y: auto;
+	padding: 6px;
+	background: var(--dpg-pill-bg);
+	border: 1px solid var(--dpg-pill-border);
+	border-radius: 12px;
+	box-shadow: 0 12px 30px rgba(10, 13, 20, 0.28);
+}
+.dpg .dpg-ms-option {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	padding: 7px 9px;
+	font-size: 0.82rem;
+	color: var(--dpg-pill-text);
+	border-radius: 8px;
+	cursor: pointer;
+	white-space: normal;
+}
+.dpg .dpg-ms-option:hover {
+	background: rgba(255, 255, 255, 0.08);
+}
+.dpg .dpg-ms-option input[type="checkbox"],
+.dpg .dpg-ms-option input[type="radio"] {
+	width: 15px;
+	height: 15px;
+	margin: 0;
+	flex: 0 0 auto;
+	accent-color: var(--dpg-bar-accent);
+	cursor: pointer;
+}
+.dpg .dpg-ms-option-label {
+	line-height: 1.35;
 }
 .dpg .dpg-search-wrap {
 	position: relative;

@@ -6,7 +6,7 @@
  * no re-binding. Progressive enhancement: with JS off, the filter bar submits
  * as a normal GET form and pagination falls back to links.
  *
- * Version: 1.2.4
+ * Version: 1.3.2
  */
 (function () {
 	'use strict';
@@ -85,7 +85,13 @@
 			});
 
 			this.form.addEventListener('change', function (e) {
-				if (e.target && e.target.matches('select[data-dpg-taxonomy]')) {
+				if (e.target && e.target.matches('input[data-dpg-taxonomy]')) {
+					var ms = e.target.closest('[data-dpg-ms]');
+					self.updateSummary(ms);
+					// Single-select (radio): the choice is made, so close the panel.
+					if (ms && e.target.type === 'radio') {
+						ms.open = false;
+					}
 					if (self.applyMode === 'live') {
 						self.applyFilters();
 					}
@@ -127,12 +133,18 @@
 		var filters = {};
 		var s = '';
 		if (this.form) {
-			var selects = this.form.querySelectorAll('select[data-dpg-taxonomy]');
-			selects.forEach(function (sel) {
-				var tax = sel.getAttribute('data-dpg-taxonomy');
-				if (tax && sel.value) {
-					filters[tax] = sel.value;
+			// Gather every checked term (checkbox or radio), grouped by taxonomy.
+			// The single-select "All" radio has an empty value and is skipped.
+			var boxes = this.form.querySelectorAll('input[data-dpg-taxonomy]:checked');
+			boxes.forEach(function (box) {
+				var tax = box.getAttribute('data-dpg-taxonomy');
+				if (!tax || box.value === '') {
+					return;
 				}
+				if (!filters[tax]) {
+					filters[tax] = [];
+				}
+				filters[tax].push(box.value);
 			});
 			var search = this.form.querySelector('[data-dpg-search]');
 			if (search) {
@@ -142,6 +154,43 @@
 		this.state.filters = filters;
 		this.state.s = s;
 		return { filters: filters, s: s };
+	};
+
+	/* Update a multi-select's summary label ("All" / term name / "N selected"). */
+	Instance.prototype.updateSummary = function (ms) {
+		if (!ms) {
+			return;
+		}
+		var valueEl = ms.querySelector('[data-dpg-ms-value]');
+		if (!valueEl) {
+			return;
+		}
+		// Count only real selections (skip the single-select "All" radio).
+		var checked = Array.prototype.slice.call(
+			ms.querySelectorAll('input[data-dpg-taxonomy]:checked')
+		).filter(function (b) { return b.value !== ''; });
+		var n = checked.length;
+		var text;
+		if (n === 0) {
+			text = DATA.i18n.all;
+		} else if (n === 1) {
+			var lbl = checked[0].parentNode.querySelector('.dpg-ms-option-label');
+			text = lbl ? lbl.textContent.trim() : DATA.i18n.all;
+		} else {
+			text = (DATA.i18n.selected || '%d selected').replace('%d', n);
+		}
+		valueEl.textContent = text;
+		ms.classList.toggle('has-selection', n > 0);
+	};
+
+	Instance.prototype.updateAllSummaries = function () {
+		var self = this;
+		if (!this.form) {
+			return;
+		}
+		this.form.querySelectorAll('[data-dpg-ms]').forEach(function (ms) {
+			self.updateSummary(ms);
+		});
 	};
 
 	Instance.prototype.applyFilters = function () {
@@ -217,13 +266,19 @@
 
 	Instance.prototype.reset = function () {
 		if (this.form) {
-			this.form.querySelectorAll('select[data-dpg-taxonomy]').forEach(function (sel) {
-				sel.value = '';
+			this.form.querySelectorAll('input[data-dpg-taxonomy]').forEach(function (box) {
+				// Radios reset to their "All" (empty-value) option; checkboxes clear.
+				box.checked = ( 'radio' === box.type && '' === box.value );
 			});
 			var search = this.form.querySelector('[data-dpg-search]');
 			if (search) {
 				search.value = '';
 			}
+			this.updateAllSummaries();
+			// Close any open dropdowns.
+			this.form.querySelectorAll('[data-dpg-ms][open]').forEach(function (ms) {
+				ms.open = false;
+			});
 		}
 		this.applyFilters();
 	};
@@ -308,7 +363,10 @@
 		});
 
 		Object.keys(this.state.filters).forEach(function (tax) {
-			params.set('dpg_' + tax, this.state.filters[tax]);
+			// Append one dpg_{tax}[] entry per selected term (array-friendly).
+			(this.state.filters[tax] || []).forEach(function (val) {
+				params.append('dpg_' + tax + '[]', val);
+			});
 		}, this);
 
 		if (this.state.s) {
@@ -323,7 +381,23 @@
 	/* --------------------------------------------------------------- *
 	 * Boot
 	 * --------------------------------------------------------------- */
+	// Close any open multi-select dropdown when clicking outside it (bound once).
+	function bindGlobalClose() {
+		if (DPG._msCloseBound) {
+			return;
+		}
+		DPG._msCloseBound = true;
+		document.addEventListener('click', function (e) {
+			document.querySelectorAll('.dpg-ms[open]').forEach(function (ms) {
+				if (!ms.contains(e.target)) {
+					ms.open = false;
+				}
+			});
+		});
+	}
+
 	function init() {
+		bindGlobalClose();
 		var roots = document.querySelectorAll('.dpg-instance');
 		roots.forEach(function (root) {
 			if (root.__dpg) {

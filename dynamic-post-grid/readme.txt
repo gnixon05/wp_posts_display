@@ -4,7 +4,7 @@ Tags: post grid, wpbakery, salient, filter, ajax, taxonomy, carousel, masonry
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.2.4
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,8 +39,9 @@ Salient theme and renders (unstyled-but-functional) on any theme.
   date, author + avatar, primary term badge, read-more. Hover effects:
   zoom / overlay fade / lift.
 * Pagination: none, numbered, AJAX load-more, or infinite scroll.
-* Filter bar: per-instance taxonomy dropdowns (admin-assigned, "All" default,
-  custom labels), keyword search, AND combination across taxonomies, live or
+* Filter bar: per-instance multi-select taxonomy dropdowns (admin-assigned,
+  "All" default, custom labels), keyword search, AND across taxonomies (OR
+  within a taxonomy), live or
   on-submit apply, debounced keyword input, reset/clear, and URL sync for
   shareable / back-button friendly results. No-JS fallback submits as GET.
 
@@ -113,6 +114,24 @@ int, and taxonomy/orderby values whitelisted. Output is escaped. The element
 config that travels to AJAX is fully re-sanitised server-side on every request.
 
 == Changelog ==
+
+= 1.3.2 =
+* Cards now keep their content top-aligned and pin the button / read-more link
+  to the bottom, so buttons line up across a row regardless of how much text
+  each card has (Education "Learn more" and the classic/minimal read-more link).
+
+= 1.3.1 =
+* New "Filter selection" option: choose multi-select (checkboxes, several terms)
+  or single select (radios, one term) per element. Defaults to multi-select.
+* Raised the filter dropdown panel's z-index so it always sits above adjacent
+  page content.
+
+= 1.3.0 =
+* Filter taxonomies are now multi-select: each filter is a compact dropdown of
+  checkboxes, so visitors can pick several terms per taxonomy at once (combined
+  with OR within a taxonomy, AND across taxonomies). Built on a <details>
+  element so it still works without JavaScript and submits as a normal GET.
+  Shareable URLs now carry multiple values per taxonomy.
 
 = 1.2.4 =
 * New "Taxonomy pills" card-content option: shows the post's terms in the filter
