@@ -4,7 +4,7 @@
  * and all custom properties are scoped to the component root (no :root), so
  * nothing leaks into or collides with the Salient theme.
  *
- * Version: 1.3.2
+ * Version: 1.3.5
  */
 
 /* -------------------------------------------------------------------------
@@ -257,6 +257,28 @@ a.dpg-tax-pill:hover {
 	justify-content: center;
 }
 
+/* Stretched "cover" link: makes the card navigate to the post without wrapping
+ * the whole card in an <a> (which would nest the pill links — invalid HTML).
+ * The cover sits above the static content but below the real inner links. */
+.dpg .dpg-card-cover {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	border-radius: inherit;
+	/* transparent hit area */
+}
+.dpg .dpg-card-cover:focus-visible {
+	outline: 2px solid var(--dpg-accent);
+	outline-offset: -3px;
+}
+/* Keep the pill links clickable above the cover (same stacking context). */
+.dpg .dpg-card--overlay .dpg-tax-pills,
+.dpg .dpg-card--magazine .dpg-tax-pills,
+.dpg .dpg-card--education .dpg-tax-pills {
+	position: relative;
+	z-index: 2;
+}
+
 .dpg .dpg-card-readmore {
 	margin-top: auto; /* pin to the bottom of the card body */
 	padding-top: 4px;
@@ -283,7 +305,8 @@ a.dpg-tax-pill:hover {
 }
 .dpg .dpg-card--overlay .dpg-card-link,
 .dpg .dpg-card--magazine .dpg-card-link {
-	display: block;
+	display: flex;
+	flex-direction: column;
 	position: relative;
 	height: 100%;
 	color: #fff;
@@ -309,6 +332,7 @@ a.dpg-tax-pill:hover {
 	gap: 8px;
 	padding: 20px;
 	min-height: 300px;
+	flex: 1 1 auto; /* fill the card so the cover link spans the whole surface */
 	justify-content: flex-end;
 }
 .dpg .dpg-card--overlay .dpg-card-title,
@@ -388,17 +412,21 @@ a.dpg-tax-pill:hover {
 .dpg .dpg-card--education .dpg-edu-link {
 	display: flex;
 	flex-direction: column;
-	height: 100%;
+	/* Link hugs its content (no grow) so the media/title heights stay
+	 * consistent across cards; growing it (flex:1) distorted the alignment. */
+	flex: 0 1 auto;
 	text-decoration: none;
 	color: inherit;
 }
 .dpg .dpg-edu-media {
+	display: block;
 	position: relative;
 	aspect-ratio: var(--dpg-edu-ratio);
 	overflow: hidden;
 	background: #eef1f6;
 }
 .dpg .dpg-edu-body {
+	position: relative; /* containing block for the cover link */
 	display: flex;
 	flex-direction: column;
 	align-items: center;

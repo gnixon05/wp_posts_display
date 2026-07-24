@@ -7,7 +7,7 @@
  * front-end markup is produced by the PHP render_callback (DPG_Render::render),
  * so the block shares the shortcode/WPBakery render path.
  *
- * Version: 1.3.2
+ * Version: 1.3.5
  */
 ( function ( wp ) {
 	'use strict';
