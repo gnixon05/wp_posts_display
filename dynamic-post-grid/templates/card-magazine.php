@@ -33,8 +33,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="dpg-term-badge"><?php echo esc_html( $card['term']->name ); ?></span>
 			<?php endif; ?>
 
-			<?php echo DPG_Render::tax_pills( $card ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
-
 			<?php if ( 'yes' === $atts['show_title'] && $card['title'] ) : ?>
 				<h3 class="dpg-card-title"><?php echo esc_html( $card['title'] ); ?></h3>
 			<?php endif; ?>
@@ -46,6 +44,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php if ( $card['is_featured'] && $card['excerpt'] ) : ?>
 				<div class="dpg-card-excerpt"><?php echo esc_html( $card['excerpt'] ); ?></div>
 			<?php endif; ?>
+
+			<?php echo DPG_Render::tax_pills( $card ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
 		</div>
 	</div>
 </article>

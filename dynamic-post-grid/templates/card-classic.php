@@ -30,8 +30,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 		<?php endif; ?>
 
-		<?php echo DPG_Render::tax_pills( $card ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
-
 		<?php if ( 'yes' === $atts['show_title'] && $card['title'] ) : ?>
 			<h3 class="dpg-card-title">
 				<a href="<?php echo esc_url( $card['permalink'] ); ?>"><?php echo esc_html( $card['title'] ); ?></a>
@@ -55,6 +53,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php if ( $card['excerpt'] ) : ?>
 			<div class="dpg-card-excerpt"><?php echo esc_html( $card['excerpt'] ); ?></div>
 		<?php endif; ?>
+
+		<?php echo DPG_Render::tax_pills( $card ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
 
 		<?php if ( 'yes' === $atts['show_readmore'] ) : ?>
 			<a class="dpg-card-readmore" href="<?php echo esc_url( $card['permalink'] ); ?>">

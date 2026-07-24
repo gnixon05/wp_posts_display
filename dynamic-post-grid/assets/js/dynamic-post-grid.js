@@ -6,7 +6,7 @@
  * no re-binding. Progressive enhancement: with JS off, the filter bar submits
  * as a normal GET form and pagination falls back to links.
  *
- * Version: 1.3.5
+ * Version: 1.3.6
  */
 (function () {
 	'use strict';
