@@ -4,7 +4,7 @@ Tags: post grid, wpbakery, salient, filter, ajax, taxonomy, carousel, masonry
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.3.5
+Stable tag: 1.3.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +114,10 @@ int, and taxonomy/orderby values whitelisted. Output is escaped. The element
 config that travels to AJAX is fully re-sanitised server-side on every request.
 
 == Changelog ==
+
+= 1.3.6 =
+* Taxonomy pills now render below the excerpt / description (above the read-more
+  or button) instead of above the title, across every card style.
 
 = 1.3.5 =
 * Fix invalid nested anchors in the overlay / magazine / education card styles:
