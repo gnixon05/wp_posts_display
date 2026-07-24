@@ -4,7 +4,7 @@ Tags: post grid, wpbakery, salient, filter, ajax, taxonomy, carousel, masonry
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +114,11 @@ int, and taxonomy/orderby values whitelisted. Output is escaped. The element
 config that travels to AJAX is fully re-sanitised server-side on every request.
 
 == Changelog ==
+
+= 1.3.3 =
+* Education card link now fills the card via flex (flex: 1) instead of
+  height: 100%, avoiding percentage-height rendering quirks while keeping the
+  "Learn more" button pinned to the bottom.
 
 = 1.3.2 =
 * Cards now keep their content top-aligned and pin the button / read-more link
