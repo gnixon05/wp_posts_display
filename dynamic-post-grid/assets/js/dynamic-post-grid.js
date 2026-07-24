@@ -6,7 +6,7 @@
  * no re-binding. Progressive enhancement: with JS off, the filter bar submits
  * as a normal GET form and pagination falls back to links.
  *
- * Version: 1.2.4
+ * Version: 1.3.0
  */
 (function () {
 	'use strict';
@@ -85,7 +85,8 @@
 			});
 
 			this.form.addEventListener('change', function (e) {
-				if (e.target && e.target.matches('select[data-dpg-taxonomy]')) {
+				if (e.target && e.target.matches('input[type="checkbox"][data-dpg-taxonomy]')) {
+					self.updateSummary(e.target.closest('[data-dpg-ms]'));
 					if (self.applyMode === 'live') {
 						self.applyFilters();
 					}
@@ -127,12 +128,17 @@
 		var filters = {};
 		var s = '';
 		if (this.form) {
-			var selects = this.form.querySelectorAll('select[data-dpg-taxonomy]');
-			selects.forEach(function (sel) {
-				var tax = sel.getAttribute('data-dpg-taxonomy');
-				if (tax && sel.value) {
-					filters[tax] = sel.value;
+			// Multi-select: gather every checked term, grouped by taxonomy.
+			var boxes = this.form.querySelectorAll('input[type="checkbox"][data-dpg-taxonomy]:checked');
+			boxes.forEach(function (box) {
+				var tax = box.getAttribute('data-dpg-taxonomy');
+				if (!tax) {
+					return;
 				}
+				if (!filters[tax]) {
+					filters[tax] = [];
+				}
+				filters[tax].push(box.value);
 			});
 			var search = this.form.querySelector('[data-dpg-search]');
 			if (search) {
@@ -142,6 +148,40 @@
 		this.state.filters = filters;
 		this.state.s = s;
 		return { filters: filters, s: s };
+	};
+
+	/* Update a multi-select's summary label ("All" / term name / "N selected"). */
+	Instance.prototype.updateSummary = function (ms) {
+		if (!ms) {
+			return;
+		}
+		var valueEl = ms.querySelector('[data-dpg-ms-value]');
+		if (!valueEl) {
+			return;
+		}
+		var checked = ms.querySelectorAll('input[type="checkbox"][data-dpg-taxonomy]:checked');
+		var n = checked.length;
+		var text;
+		if (n === 0) {
+			text = DATA.i18n.all;
+		} else if (n === 1) {
+			var lbl = checked[0].parentNode.querySelector('.dpg-ms-option-label');
+			text = lbl ? lbl.textContent.trim() : DATA.i18n.all;
+		} else {
+			text = (DATA.i18n.selected || '%d selected').replace('%d', n);
+		}
+		valueEl.textContent = text;
+		ms.classList.toggle('has-selection', n > 0);
+	};
+
+	Instance.prototype.updateAllSummaries = function () {
+		var self = this;
+		if (!this.form) {
+			return;
+		}
+		this.form.querySelectorAll('[data-dpg-ms]').forEach(function (ms) {
+			self.updateSummary(ms);
+		});
 	};
 
 	Instance.prototype.applyFilters = function () {
@@ -217,13 +257,18 @@
 
 	Instance.prototype.reset = function () {
 		if (this.form) {
-			this.form.querySelectorAll('select[data-dpg-taxonomy]').forEach(function (sel) {
-				sel.value = '';
+			this.form.querySelectorAll('input[type="checkbox"][data-dpg-taxonomy]').forEach(function (box) {
+				box.checked = false;
 			});
 			var search = this.form.querySelector('[data-dpg-search]');
 			if (search) {
 				search.value = '';
 			}
+			this.updateAllSummaries();
+			// Close any open dropdowns.
+			this.form.querySelectorAll('[data-dpg-ms][open]').forEach(function (ms) {
+				ms.open = false;
+			});
 		}
 		this.applyFilters();
 	};
@@ -308,7 +353,10 @@
 		});
 
 		Object.keys(this.state.filters).forEach(function (tax) {
-			params.set('dpg_' + tax, this.state.filters[tax]);
+			// Append one dpg_{tax}[] entry per selected term (array-friendly).
+			(this.state.filters[tax] || []).forEach(function (val) {
+				params.append('dpg_' + tax + '[]', val);
+			});
 		}, this);
 
 		if (this.state.s) {
@@ -323,7 +371,23 @@
 	/* --------------------------------------------------------------- *
 	 * Boot
 	 * --------------------------------------------------------------- */
+	// Close any open multi-select dropdown when clicking outside it (bound once).
+	function bindGlobalClose() {
+		if (DPG._msCloseBound) {
+			return;
+		}
+		DPG._msCloseBound = true;
+		document.addEventListener('click', function (e) {
+			document.querySelectorAll('.dpg-ms[open]').forEach(function (ms) {
+				if (!ms.contains(e.target)) {
+					ms.open = false;
+				}
+			});
+		});
+	}
+
 	function init() {
+		bindGlobalClose();
 		var roots = document.querySelectorAll('.dpg-instance');
 		roots.forEach(function (root) {
 			if (root.__dpg) {

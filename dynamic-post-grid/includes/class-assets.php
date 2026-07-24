@@ -64,8 +64,11 @@ class DPG_Assets {
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'dpg_ajax' ),
 				'i18n'    => array(
-					'loading' => __( 'Loading&hellip;', 'dynamic-post-grid' ),
-					'error'   => __( 'Something went wrong. Please try again.', 'dynamic-post-grid' ),
+					'loading'  => __( 'Loading&hellip;', 'dynamic-post-grid' ),
+					'error'    => __( 'Something went wrong. Please try again.', 'dynamic-post-grid' ),
+					'all'      => __( 'All', 'dynamic-post-grid' ),
+					/* translators: %d: number of selected filter options. */
+					'selected' => __( '%d selected', 'dynamic-post-grid' ),
 				),
 			)
 		);
