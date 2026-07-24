@@ -4,7 +4,7 @@ Tags: post grid, wpbakery, salient, filter, ajax, taxonomy, carousel, masonry
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +114,11 @@ int, and taxonomy/orderby values whitelisted. Output is escaped. The element
 config that travels to AJAX is fully re-sanitised server-side on every request.
 
 == Changelog ==
+
+= 1.3.2 =
+* Cards now keep their content top-aligned and pin the button / read-more link
+  to the bottom, so buttons line up across a row regardless of how much text
+  each card has (Education "Learn more" and the classic/minimal read-more link).
 
 = 1.3.1 =
 * New "Filter selection" option: choose multi-select (checkboxes, several terms)
