@@ -7,7 +7,7 @@
  * front-end markup is produced by the PHP render_callback (DPG_Render::render),
  * so the block shares the shortcode/WPBakery render path.
  *
- * Version: 1.3.6
+ * Version: 1.4.0
  */
 ( function ( wp ) {
 	'use strict';
@@ -64,6 +64,12 @@
 		mode: [
 			{ label: __( 'Grid', 'dynamic-post-grid' ), value: 'grid' },
 			{ label: __( 'Carousel', 'dynamic-post-grid' ), value: 'carousel' }
+		],
+		align: [
+			{ label: __( 'Default (per layout)', 'dynamic-post-grid' ), value: '' },
+			{ label: __( 'Left', 'dynamic-post-grid' ), value: 'left' },
+			{ label: __( 'Center', 'dynamic-post-grid' ), value: 'center' },
+			{ label: __( 'Right', 'dynamic-post-grid' ), value: 'right' }
 		],
 		hover: [
 			{ label: __( 'None', 'dynamic-post-grid' ), value: 'none' },
@@ -142,7 +148,8 @@
 				ctl.number( __( 'Columns (tablet)', 'dynamic-post-grid' ), 'columns_tablet', 1, 4 ),
 				ctl.number( __( 'Columns (mobile)', 'dynamic-post-grid' ), 'columns_mobile', 1, 3 ),
 				ctl.number( __( 'Gap (px)', 'dynamic-post-grid' ), 'gap', 0, 80 ),
-				ctl.number( __( 'Card corner radius (px)', 'dynamic-post-grid' ), 'card_radius', 0, 60 )
+				ctl.number( __( 'Card corner radius (px)', 'dynamic-post-grid' ), 'card_radius', 0, 60 ),
+				ctl.select( __( 'Content alignment', 'dynamic-post-grid' ), 'content_align', OPT.align )
 			),
 			el( PanelBody, { title: __( 'Card Content', 'dynamic-post-grid' ), initialOpen: false },
 				ctl.toggle( __( 'Featured image', 'dynamic-post-grid' ), 'show_image' ),
@@ -156,13 +163,17 @@
 				ctl.toggle( __( 'Category / term badge', 'dynamic-post-grid' ), 'show_category' ),
 				ctl.toggle( __( 'Taxonomy pills', 'dynamic-post-grid' ), 'show_taxonomies' ),
 				a.show_taxonomies ? ctl.text( __( 'Pill taxonomies', 'dynamic-post-grid' ), 'taxonomies', __( 'Comma list of taxonomy slugs. Blank = filter taxonomies.', 'dynamic-post-grid' ) ) : null,
+				a.show_taxonomies ? ctl.text( __( 'Pill colors', 'dynamic-post-grid' ), 'pill_colors', __( 'One hex per filter family, comma-separated.', 'dynamic-post-grid' ) ) : null,
+				a.show_taxonomies ? ctl.toggle( __( 'Pill legend', 'dynamic-post-grid' ), 'pill_legend' ) : null,
+				a.show_taxonomies ? ctl.number( __( 'Pills before "+N more"', 'dynamic-post-grid' ), 'pill_limit', 0, 40 ) : null,
 				ctl.toggle( __( 'Read more link', 'dynamic-post-grid' ), 'show_readmore' ),
 				a.show_readmore ? ctl.text( __( 'Read more text', 'dynamic-post-grid' ), 'readmore_text' ) : null,
 				ctl.select( __( 'Hover effect', 'dynamic-post-grid' ), 'hover', OPT.hover )
 			),
 			el( PanelBody, { title: __( 'Pagination', 'dynamic-post-grid' ), initialOpen: false },
 				ctl.select( __( 'Pagination', 'dynamic-post-grid' ), 'pagination', OPT.pagination ),
-				( a.pagination === 'loadmore' || a.pagination === 'infinite' ) ? ctl.text( __( 'Load more text', 'dynamic-post-grid' ), 'loadmore_text' ) : null
+				( a.pagination === 'loadmore' || a.pagination === 'infinite' ) ? ctl.text( __( 'Load more text', 'dynamic-post-grid' ), 'loadmore_text' ) : null,
+				ctl.text( __( 'Empty message', 'dynamic-post-grid' ), 'empty_text', __( 'Shown when no posts match. Default: "Content coming soon!"', 'dynamic-post-grid' ) )
 			),
 			el( PanelBody, { title: __( 'Filter Bar', 'dynamic-post-grid' ), initialOpen: false },
 				ctl.toggle( __( 'Enable filter bar', 'dynamic-post-grid' ), 'filter_enable' ),

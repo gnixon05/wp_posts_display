@@ -51,7 +51,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="dpg-card-excerpt"><?php echo esc_html( $card['excerpt'] ); ?></div>
 			<?php endif; ?>
 
-			<?php echo DPG_Render::tax_pills( $card ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
+			<?php echo DPG_Render::tax_pills( $card, $atts ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
 		</div>
 	</div>
 </article>

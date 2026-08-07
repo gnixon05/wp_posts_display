@@ -54,6 +54,9 @@ class DPG_Render {
 			'dpg-mode-' . $atts['mode'],
 			'dpg-hover-' . $atts['hover'],
 		);
+		if ( $atts['content_align'] ) {
+			$classes[] = 'dpg-align-' . $atts['content_align'];
+		}
 
 		ob_start();
 		?>
@@ -94,7 +97,7 @@ class DPG_Render {
 		ob_start();
 
 		if ( ! $query->have_posts() ) {
-			echo self::render_empty(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo self::render_empty( $atts ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			return ob_get_clean();
 		}
 
@@ -279,6 +282,8 @@ class DPG_Render {
 			$taxes = DPG_Filter::resolve_taxonomies( $atts );
 		}
 
+		$colors = self::tax_color_map( $atts );
+
 		$pills = array();
 		foreach ( $taxes as $tax ) {
 			if ( ! taxonomy_exists( $tax ) ) {
@@ -295,6 +300,7 @@ class DPG_Render {
 					'url'      => is_wp_error( $url ) ? '' : $url,
 					'taxonomy' => $tax,
 					'slug'     => $term->slug,
+					'color'    => isset( $colors[ $tax ] ) ? $colors[ $tax ] : '',
 				);
 			}
 		}
@@ -310,25 +316,134 @@ class DPG_Render {
 	}
 
 	/**
-	 * Render the taxonomy pills markup for a card. Returns '' when there are none.
+	 * Map each taxonomy to a colour from the configured palette (cycled), keyed
+	 * by taxonomy slug so a filter and its pills always share the same colour.
 	 *
-	 * @param array $card Prepared card data.
+	 * @param array $atts Attributes.
+	 * @return array taxonomy => #hex.
+	 */
+	public static function tax_color_map( $atts ) {
+		$palette = DPG_Query::color_list( $atts );
+
+		// Ordered taxonomies: the filter families first, then any pill-only ones.
+		$order = DPG_Filter::resolve_taxonomies( $atts );
+		if ( ! empty( $atts['taxonomies'] ) ) {
+			foreach ( explode( ',', $atts['taxonomies'] ) as $tax ) {
+				$tax = sanitize_key( $tax );
+				if ( $tax && ! in_array( $tax, $order, true ) ) {
+					$order[] = $tax;
+				}
+			}
+		}
+
+		$map   = array();
+		$count = count( $palette );
+		$i     = 0;
+		foreach ( $order as $tax ) {
+			$map[ $tax ] = $palette[ $i % $count ];
+			$i++;
+		}
+
+		/**
+		 * Filter the taxonomy → colour map.
+		 *
+		 * @param array $map  taxonomy => hex.
+		 * @param array $atts Attributes.
+		 */
+		return apply_filters( 'dpg_tax_color_map', $map, $atts );
+	}
+
+	/**
+	 * Human label for a taxonomy in the pill legend (custom filter label if set,
+	 * else the taxonomy's singular name).
+	 *
+	 * @param string $tax  Taxonomy slug.
+	 * @param array  $atts Attributes.
 	 * @return string
 	 */
-	public static function tax_pills( $card ) {
+	private static function tax_label( $tax, $atts ) {
+		$labels = ! empty( $atts['filter_labels'] ) ? DPG_Filter::labels_map( $atts['filter_labels'] ) : array();
+		if ( isset( $labels[ $tax ] ) && '' !== $labels[ $tax ] ) {
+			return $labels[ $tax ];
+		}
+		$obj = get_taxonomy( $tax );
+		return $obj ? $obj->labels->singular_name : $tax;
+	}
+
+	/**
+	 * Render the taxonomy pill block for a card in the "1d" style: an optional
+	 * family legend, neutral pills each with a colour-coded leading bar, and a
+	 * "+N more" toggle once the count passes the limit. Returns '' when empty.
+	 *
+	 * @param array $card Prepared card data.
+	 * @param array $atts Element attributes.
+	 * @return string
+	 */
+	public static function tax_pills( $card, $atts = array() ) {
 		if ( empty( $card['tax_pills'] ) ) {
 			return '';
 		}
-		$out = '<div class="dpg-tax-pills">';
-		foreach ( $card['tax_pills'] as $pill ) {
-			if ( ! empty( $pill['url'] ) ) {
-				$out .= '<a class="dpg-tax-pill" href="' . esc_url( $pill['url'] ) . '">' . esc_html( $pill['name'] ) . '</a>';
-			} else {
-				$out .= '<span class="dpg-tax-pill">' . esc_html( $pill['name'] ) . '</span>';
+
+		$legend_on = ! isset( $atts['pill_legend'] ) || 'yes' === $atts['pill_legend'];
+		$limit     = isset( $atts['pill_limit'] ) ? (int) $atts['pill_limit'] : 10;
+		$pills     = $card['tax_pills'];
+		$total     = count( $pills );
+
+		// Families present, in first-seen order (for the legend).
+		$families = array();
+		foreach ( $pills as $pill ) {
+			$tax = $pill['taxonomy'];
+			if ( ! isset( $families[ $tax ] ) ) {
+				$families[ $tax ] = array(
+					'label' => self::tax_label( $tax, $atts ),
+					'color' => $pill['color'],
+				);
 			}
 		}
-		$out .= '</div>';
-		return $out;
+
+		ob_start();
+		echo '<div class="dpg-tax">';
+
+		if ( $legend_on && ! empty( $families ) ) {
+			echo '<div class="dpg-tax-legend">';
+			foreach ( $families as $fam ) {
+				echo '<span class="dpg-tax-legend-item">';
+				echo '<span class="dpg-tax-legend-bar" style="background:' . esc_attr( $fam['color'] ) . '"></span>';
+				echo esc_html( $fam['label'] );
+				echo '</span>';
+			}
+			echo '</div>';
+		}
+
+		echo '<div class="dpg-tax-pills">';
+		$i = 0;
+		foreach ( $pills as $pill ) {
+			$classes = 'dpg-tax-pill';
+			if ( $limit > 0 && $i >= $limit ) {
+				$classes .= ' dpg-tax-pill--extra';
+			}
+			$bar   = '<span class="dpg-tax-pill-bar" style="background:' . esc_attr( $pill['color'] ) . '"></span>';
+			$label = '<span class="dpg-tax-pill-label">' . esc_html( $pill['name'] ) . '</span>';
+			if ( ! empty( $pill['url'] ) ) {
+				echo '<a class="' . esc_attr( $classes ) . '" href="' . esc_url( $pill['url'] ) . '">' . $bar . $label . '</a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			} else {
+				echo '<span class="' . esc_attr( $classes ) . '">' . $bar . $label . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+			$i++;
+		}
+
+		if ( $limit > 0 && $total > $limit ) {
+			$more = $total - $limit;
+			/* translators: %d: number of additional (hidden) tags. */
+			$more_label = sprintf( _n( '+%d more', '+%d more', $more, 'dynamic-post-grid' ), $more );
+			echo '<button type="button" class="dpg-pill-more" '
+				. 'data-more-label="' . esc_attr( $more_label ) . '" '
+				. 'data-less-label="' . esc_attr__( 'Show less', 'dynamic-post-grid' ) . '">'
+				. esc_html( $more_label ) . '</button>';
+		}
+
+		echo '</div></div>';
+		return ob_get_clean();
 	}
 
 	/* ----------------------------------------------------------------- *
@@ -391,10 +506,12 @@ class DPG_Render {
 	/**
 	 * Markup shown when a query returns no posts.
 	 *
+	 * @param array $atts Clean attributes (optional).
 	 * @return string
 	 */
-	public static function render_empty() {
-		$msg = apply_filters( 'dpg_empty_message', __( 'No posts found.', 'dynamic-post-grid' ) );
+	public static function render_empty( $atts = array() ) {
+		$default = ( ! empty( $atts['empty_text'] ) ) ? $atts['empty_text'] : __( 'Content coming soon!', 'dynamic-post-grid' );
+		$msg     = apply_filters( 'dpg_empty_message', $default, $atts );
 		return '<div class="dpg-empty" role="status">' . esc_html( $msg ) . '</div>';
 	}
 

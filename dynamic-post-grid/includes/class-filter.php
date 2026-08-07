@@ -42,6 +42,9 @@ class DPG_Filter {
 			return '';
 		}
 
+		// Colour-coding shared with the pills (keyed by taxonomy).
+		$colors = DPG_Render::tax_color_map( $atts );
+
 		// Build dropdown descriptors for the template.
 		$dropdowns = array();
 		foreach ( $taxonomies as $tax ) {
@@ -59,6 +62,7 @@ class DPG_Filter {
 				'name'     => 'dpg_' . $tax,
 				'terms'    => $terms,
 				'selected' => isset( $active_tax[ $tax ] ) ? array_map( 'intval', (array) $active_tax[ $tax ] ) : array(),
+				'color'    => isset( $colors[ $tax ] ) ? $colors[ $tax ] : '',
 			);
 		}
 
@@ -134,6 +138,17 @@ class DPG_Filter {
 	 * @return array
 	 */
 	private static function parse_labels( $raw ) {
+		return self::labels_map( $raw );
+	}
+
+	/**
+	 * Public: parse a "tax:Label, tax2:Label2" string into a map. Reused by the
+	 * pill legend so it shares the filter's custom labels.
+	 *
+	 * @param string $raw Raw label string.
+	 * @return array
+	 */
+	public static function labels_map( $raw ) {
 		$map = array();
 		if ( ! $raw ) {
 			return $map;

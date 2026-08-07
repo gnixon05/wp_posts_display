@@ -6,7 +6,7 @@
  * no re-binding. Progressive enhancement: with JS off, the filter bar submits
  * as a normal GET form and pagination falls back to links.
  *
- * Version: 1.3.6
+ * Version: 1.4.0
  */
 (function () {
 	'use strict';
@@ -113,6 +113,20 @@
 					e.preventDefault();
 					self.reset();
 				}
+			});
+
+			// Mouse-wheel scroll for the dropdown panels. Some themes hijack the
+			// global wheel event (smooth-scroll libraries), so scroll manually and
+			// stop propagation to keep the panel scrollable on hover.
+			this.form.querySelectorAll('.dpg-ms-panel').forEach(function (panel) {
+				panel.addEventListener('wheel', function (e) {
+					if (panel.scrollHeight <= panel.clientHeight) {
+						return;
+					}
+					panel.scrollTop += e.deltaY;
+					e.preventDefault();
+					e.stopPropagation();
+				}, { passive: false });
 			});
 		}
 
@@ -396,8 +410,33 @@
 		});
 	}
 
+	// Delegated "+N more" / "Show less" toggle for taxonomy pills (bound once;
+	// works for cards injected via AJAX too).
+	function bindPillToggle() {
+		if (DPG._pillBound) {
+			return;
+		}
+		DPG._pillBound = true;
+		document.addEventListener('click', function (e) {
+			var btn = e.target && e.target.closest ? e.target.closest('.dpg-pill-more') : null;
+			if (!btn) {
+				return;
+			}
+			e.preventDefault();
+			var tax = btn.closest('.dpg-tax');
+			if (!tax) {
+				return;
+			}
+			var expanded = tax.classList.toggle('is-expanded');
+			btn.textContent = expanded
+				? (btn.getAttribute('data-less-label') || 'Show less')
+				: (btn.getAttribute('data-more-label') || btn.textContent);
+		});
+	}
+
 	function init() {
 		bindGlobalClose();
+		bindPillToggle();
 		var roots = document.querySelectorAll('.dpg-instance');
 		roots.forEach(function (root) {
 			if (root.__dpg) {

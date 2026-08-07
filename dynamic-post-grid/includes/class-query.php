@@ -84,6 +84,7 @@ class DPG_Query {
 			'columns_mobile' => 1,
 			'gap'            => 30,
 			'card_radius'    => 10, // px corner radius for cards.
+			'content_align'  => '', // '' (layout default) | left | center | right.
 			'mode'           => 'grid', // grid | carousel.
 
 			// Card content / meta toggles.
@@ -99,6 +100,9 @@ class DPG_Query {
 			'show_category'  => 'yes',
 			'show_taxonomies'=> 'no', // show taxonomy-term pills on each card.
 			'taxonomies'     => '',   // which taxonomies (blank = the filter taxonomies).
+			'pill_colors'    => '#E9EEF8,#E3EFEC,#F6ECE0', // one color per filter family (cycled).
+			'pill_legend'    => 'yes', // show the family legend row above the pills.
+			'pill_limit'     => 10,    // pills shown before a "+N more" toggle (0 = all).
 			'show_readmore'  => 'no',
 			'readmore_text'  => '',
 			'hover'          => 'zoom',
@@ -106,6 +110,7 @@ class DPG_Query {
 			// Pagination.
 			'pagination'     => 'none',
 			'loadmore_text'  => '',
+			'empty_text'     => '', // override for the "no results" message.
 
 			// Filter bar (Part 4).
 			'filter_enable'      => 'no',
@@ -164,15 +169,18 @@ class DPG_Query {
 		$atts['columns_mobile'] = min( 3, max( 1, (int) $atts['columns_mobile'] ) );
 		$atts['gap']            = min( 120, max( 0, (int) $atts['gap'] ) );
 		$atts['card_radius']    = min( 60, max( 0, (int) $atts['card_radius'] ) );
+		$atts['content_align']  = in_array( $atts['content_align'], array( 'left', 'center', 'right' ), true ) ? $atts['content_align'] : '';
 		$atts['mode']           = ( 'carousel' === $atts['mode'] ) ? 'carousel' : 'grid';
 
 		// Toggles.
-		foreach ( array( 'show_image', 'show_title', 'show_excerpt', 'show_date', 'show_author', 'show_avatar', 'show_category', 'show_taxonomies', 'show_readmore' ) as $flag ) {
+		foreach ( array( 'show_image', 'show_title', 'show_excerpt', 'show_date', 'show_author', 'show_avatar', 'show_category', 'show_taxonomies', 'pill_legend', 'show_readmore' ) as $flag ) {
 			$atts[ $flag ] = self::bool( $atts[ $flag ] ) ? 'yes' : 'no';
 		}
 		$atts['image_size']     = sanitize_text_field( $atts['image_size'] );
 		$atts['fallback_image'] = sanitize_text_field( $atts['fallback_image'] );
 		$atts['taxonomies']     = self::clean_taxonomies( $atts['taxonomies'], $atts['post_type'] );
+		$atts['pill_colors']    = self::clean_color_list( $atts['pill_colors'], array( '#E9EEF8', '#E3EFEC', '#F6ECE0' ) );
+		$atts['pill_limit']     = max( 0, (int) $atts['pill_limit'] );
 		$atts['excerpt_length'] = max( 0, (int) $atts['excerpt_length'] );
 		$atts['readmore_text']  = sanitize_text_field( $atts['readmore_text'] );
 		$atts['hover']          = in_array( $atts['hover'], self::allowed_hover(), true ) ? $atts['hover'] : 'none';
@@ -180,6 +188,7 @@ class DPG_Query {
 		// Pagination.
 		$atts['pagination']     = in_array( $atts['pagination'], self::allowed_pagination(), true ) ? $atts['pagination'] : 'none';
 		$atts['loadmore_text']  = sanitize_text_field( $atts['loadmore_text'] );
+		$atts['empty_text']     = sanitize_text_field( $atts['empty_text'] );
 
 		// Filter bar.
 		$atts['filter_enable']       = self::bool( $atts['filter_enable'] ) ? 'yes' : 'no';
@@ -361,6 +370,47 @@ class DPG_Query {
 		}
 		$hex = sanitize_hex_color( $v );
 		return $hex ? $hex : '';
+	}
+
+	/**
+	 * Sanitise a comma-separated list of hex colours into a normalised string.
+	 *
+	 * @param mixed    $list     Raw list.
+	 * @param string[] $fallback Defaults when nothing valid remains.
+	 * @return string Comma list of #hex colours.
+	 */
+	public static function clean_color_list( $list, $fallback = array() ) {
+		if ( is_array( $list ) ) {
+			$parts = $list;
+		} else {
+			$parts = preg_split( '/[\s,]+/', (string) $list, -1, PREG_SPLIT_NO_EMPTY );
+		}
+		$clean = array();
+		foreach ( (array) $parts as $p ) {
+			$hex = self::color( $p );
+			if ( $hex ) {
+				$clean[] = $hex;
+			}
+		}
+		if ( empty( $clean ) ) {
+			$clean = $fallback;
+		}
+		return implode( ',', $clean );
+	}
+
+	/**
+	 * Return the pill colour palette as an array (never empty).
+	 *
+	 * @param array $atts Attributes.
+	 * @return string[]
+	 */
+	public static function color_list( $atts ) {
+		$list = isset( $atts['pill_colors'] ) ? $atts['pill_colors'] : '';
+		$out  = array_filter( array_map( 'trim', explode( ',', (string) $list ) ) );
+		if ( empty( $out ) ) {
+			$out = array( '#E9EEF8', '#E3EFEC', '#F6ECE0' );
+		}
+		return array_values( $out );
 	}
 
 	/**
