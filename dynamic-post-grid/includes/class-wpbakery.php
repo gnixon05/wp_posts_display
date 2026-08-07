@@ -259,6 +259,19 @@ class DPG_WPBakery {
 				'description' => __( '0 for square corners.', 'dynamic-post-grid' ),
 				'group'       => $group_layout,
 			),
+			array(
+				'type'       => 'dropdown',
+				'heading'    => __( 'Content alignment', 'dynamic-post-grid' ),
+				'param_name' => 'content_align',
+				'value'      => array(
+					__( 'Default (per layout)', 'dynamic-post-grid' ) => '',
+					__( 'Left', 'dynamic-post-grid' )                 => 'left',
+					__( 'Center', 'dynamic-post-grid' )               => 'center',
+					__( 'Right', 'dynamic-post-grid' )                => 'right',
+				),
+				'std'        => '',
+				'group'      => $group_layout,
+			),
 
 			/* ---- Card content ---- */
 			array(
@@ -356,6 +369,33 @@ class DPG_WPBakery {
 				'group'       => $group_content,
 			),
 			array(
+				'type'        => 'textfield',
+				'heading'     => __( 'Pill colors', 'dynamic-post-grid' ),
+				'param_name'  => 'pill_colors',
+				'value'       => '#E9EEF8,#E3EFEC,#F6ECE0',
+				'description' => __( 'One hex color per filter family, comma-separated. Cycles across the taxonomies.', 'dynamic-post-grid' ),
+				'dependency'  => array( 'element' => 'show_taxonomies', 'not_empty' => true ),
+				'group'       => $group_content,
+			),
+			array(
+				'type'       => 'checkbox',
+				'heading'    => __( 'Pill legend', 'dynamic-post-grid' ),
+				'param_name' => 'pill_legend',
+				'value'      => array( __( 'Show', 'dynamic-post-grid' ) => 'yes' ),
+				'std'        => 'yes',
+				'dependency' => array( 'element' => 'show_taxonomies', 'not_empty' => true ),
+				'group'      => $group_content,
+			),
+			array(
+				'type'        => 'textfield',
+				'heading'     => __( 'Pills before "+N more"', 'dynamic-post-grid' ),
+				'param_name'  => 'pill_limit',
+				'value'       => '10',
+				'description' => __( 'Show this many pills, then a toggle for the rest. 0 shows all.', 'dynamic-post-grid' ),
+				'dependency'  => array( 'element' => 'show_taxonomies', 'not_empty' => true ),
+				'group'       => $group_content,
+			),
+			array(
 				'type'       => 'checkbox',
 				'heading'    => __( 'Read more link', 'dynamic-post-grid' ),
 				'param_name' => 'show_readmore',
@@ -405,6 +445,14 @@ class DPG_WPBakery {
 				'value'      => '',
 				'dependency' => array( 'element' => 'pagination', 'value' => array( 'loadmore', 'infinite' ) ),
 				'group'      => $group_pagination,
+			),
+			array(
+				'type'        => 'textfield',
+				'heading'     => __( 'Empty message', 'dynamic-post-grid' ),
+				'param_name'  => 'empty_text',
+				'value'       => '',
+				'description' => __( 'Shown when no posts match. Default: "Content coming soon!"', 'dynamic-post-grid' ),
+				'group'       => $group_pagination,
 			),
 
 			/* ---- Filter bar ---- */

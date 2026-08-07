@@ -4,7 +4,7 @@ Tags: post grid, wpbakery, salient, filter, ajax, taxonomy, carousel, masonry
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.3.6
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +114,20 @@ int, and taxonomy/orderby values whitelisted. Output is escaped. The element
 config that travels to AJAX is fully re-sanitised server-side on every request.
 
 == Changelog ==
+
+= 1.4.0 =
+* Taxonomy pills restyled to the "quiet coding" design (option 1d): neutral
+  pills each with a colour-coded leading bar, a family legend row, and a
+  "+N more" / Show less toggle once the tag count passes a limit.
+* Colour-code each filter family and its pills. New `pill_colors` option
+  (defaults #E9EEF8, #E3EFEC, #F6ECE0) cycles one colour per taxonomy; a matching
+  swatch appears on each filter dropdown. `pill_legend` and `pill_limit` options
+  added.
+* New "Content alignment" option (left / center / right) for the card content.
+* "No results" message is now "Content coming soon!" and configurable via the
+  new `empty_text` option.
+* Fix: filter dropdown lists now respond to mouse-wheel scroll on hover even when
+  the theme hijacks the wheel event.
 
 = 1.3.6 =
 * Taxonomy pills now render below the excerpt / description (above the read-more

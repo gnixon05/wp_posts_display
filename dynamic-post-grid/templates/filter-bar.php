@@ -51,6 +51,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 				?>
 				<div class="dpg-filter-group dpg-filter-group--tax">
 					<label class="dpg-filter-label" id="<?php echo esc_attr( $dpg_field_id . '-lbl' ); ?>">
+						<?php if ( ! empty( $dd['color'] ) ) : ?>
+							<span class="dpg-filter-swatch" style="background:<?php echo esc_attr( $dd['color'] ); ?>" aria-hidden="true"></span>
+						<?php endif; ?>
 						<?php echo esc_html( $dd['label'] ); ?>
 					</label>
 					<details class="dpg-ms" data-dpg-ms data-dpg-taxonomy="<?php echo esc_attr( $dd['taxonomy'] ); ?>">

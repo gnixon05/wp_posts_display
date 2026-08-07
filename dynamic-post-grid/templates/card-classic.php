@@ -54,7 +54,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="dpg-card-excerpt"><?php echo esc_html( $card['excerpt'] ); ?></div>
 		<?php endif; ?>
 
-		<?php echo DPG_Render::tax_pills( $card ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
+		<?php echo DPG_Render::tax_pills( $card, $atts ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
 
 		<?php if ( 'yes' === $atts['show_readmore'] ) : ?>
 			<a class="dpg-card-readmore" href="<?php echo esc_url( $card['permalink'] ); ?>">
