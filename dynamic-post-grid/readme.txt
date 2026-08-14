@@ -4,7 +4,7 @@ Tags: post grid, wpbakery, salient, filter, ajax, taxonomy, carousel, masonry
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +114,14 @@ int, and taxonomy/orderby values whitelisted. Output is escaped. The element
 config that travels to AJAX is fully re-sanitised server-side on every request.
 
 == Changelog ==
+
+= 1.4.1 =
+* Taxonomy pills are now capped by ROW count, not just pill count. New "Max pill
+  rows" option (default 3) measures the rendered pills in the browser and hides
+  everything past that many rows behind the "+N more" toggle, so a card never
+  shows more than the chosen number of tag rows. Re-measures on resize and after
+  AJAX filter/load-more. The old count cap remains as an optional hard ceiling
+  ("Hard pill cap") and the no-JS fallback.
 
 = 1.4.0 =
 * Taxonomy pills restyled to the "quiet coding" design (option 1d): neutral

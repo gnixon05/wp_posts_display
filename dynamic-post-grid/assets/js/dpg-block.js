@@ -7,7 +7,7 @@
  * front-end markup is produced by the PHP render_callback (DPG_Render::render),
  * so the block shares the shortcode/WPBakery render path.
  *
- * Version: 1.4.0
+ * Version: 1.4.1
  */
 ( function ( wp ) {
 	'use strict';
@@ -165,7 +165,8 @@
 				a.show_taxonomies ? ctl.text( __( 'Pill taxonomies', 'dynamic-post-grid' ), 'taxonomies', __( 'Comma list of taxonomy slugs. Blank = filter taxonomies.', 'dynamic-post-grid' ) ) : null,
 				a.show_taxonomies ? ctl.text( __( 'Pill colors', 'dynamic-post-grid' ), 'pill_colors', __( 'One hex per filter family, comma-separated.', 'dynamic-post-grid' ) ) : null,
 				a.show_taxonomies ? ctl.toggle( __( 'Pill legend', 'dynamic-post-grid' ), 'pill_legend' ) : null,
-				a.show_taxonomies ? ctl.number( __( 'Pills before "+N more"', 'dynamic-post-grid' ), 'pill_limit', 0, 40 ) : null,
+				a.show_taxonomies ? ctl.number( __( 'Max pill rows', 'dynamic-post-grid' ), 'pill_rows', 0, 8 ) : null,
+				a.show_taxonomies ? ctl.number( __( 'Hard pill cap (count, 0 = off)', 'dynamic-post-grid' ), 'pill_limit', 0, 40 ) : null,
 				ctl.toggle( __( 'Read more link', 'dynamic-post-grid' ), 'show_readmore' ),
 				a.show_readmore ? ctl.text( __( 'Read more text', 'dynamic-post-grid' ), 'readmore_text' ) : null,
 				ctl.select( __( 'Hover effect', 'dynamic-post-grid' ), 'hover', OPT.hover )

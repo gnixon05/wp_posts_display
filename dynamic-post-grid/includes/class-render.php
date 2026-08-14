@@ -385,7 +385,8 @@ class DPG_Render {
 		}
 
 		$legend_on = ! isset( $atts['pill_legend'] ) || 'yes' === $atts['pill_legend'];
-		$limit     = isset( $atts['pill_limit'] ) ? (int) $atts['pill_limit'] : 10;
+		$limit     = isset( $atts['pill_limit'] ) ? (int) $atts['pill_limit'] : 0;
+		$rows      = isset( $atts['pill_rows'] ) ? (int) $atts['pill_rows'] : 3;
 		$pills     = $card['tax_pills'];
 		$total     = count( $pills );
 
@@ -401,8 +402,17 @@ class DPG_Render {
 			}
 		}
 
+		// Data attributes let the front-end script cap the pills to N rows and
+		// build/adjust the "+N more" toggle after measuring the rendered widths.
+		$data = '';
+		if ( $rows > 0 || $limit > 0 ) {
+			$data = ' data-pill-rows="' . esc_attr( $rows ) . '"'
+				. ' data-more-tpl="' . esc_attr__( '+%d more', 'dynamic-post-grid' ) . '"'
+				. ' data-less-label="' . esc_attr__( 'Show less', 'dynamic-post-grid' ) . '"';
+		}
+
 		ob_start();
-		echo '<div class="dpg-tax">';
+		echo '<div class="dpg-tax"' . $data . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr above.
 
 		if ( $legend_on && ! empty( $families ) ) {
 			echo '<div class="dpg-tax-legend">';

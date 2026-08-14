@@ -4,7 +4,7 @@
  * and all custom properties are scoped to the component root (no :root), so
  * nothing leaks into or collides with the Salient theme.
  *
- * Version: 1.4.0
+ * Version: 1.4.1
  */
 
 /* -------------------------------------------------------------------------
@@ -286,10 +286,12 @@
 a.dpg-tax-pill:hover {
 	background: var(--dpg-tax-pill-bg-hover);
 }
-.dpg .dpg-tax-pill--extra {
+.dpg .dpg-tax-pill--extra,
+.dpg .dpg-tax-pill--rowhide {
 	display: none;
 }
-.dpg .dpg-tax.is-expanded .dpg-tax-pill--extra {
+.dpg .dpg-tax.is-expanded .dpg-tax-pill--extra,
+.dpg .dpg-tax.is-expanded .dpg-tax-pill--rowhide {
 	display: inline-flex;
 }
 .dpg .dpg-pill-more {
@@ -309,6 +311,9 @@ a.dpg-tax-pill:hover {
 .dpg .dpg-pill-more:hover {
 	color: var(--dpg-accent);
 	border-color: var(--dpg-accent);
+}
+.dpg .dpg-pill-more[hidden] {
+	display: none;
 }
 /* Education layout is centred, so centre its pill rows too. */
 .dpg.dpg-style-education .dpg-tax-legend,
