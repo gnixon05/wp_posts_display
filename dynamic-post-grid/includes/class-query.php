@@ -102,7 +102,8 @@ class DPG_Query {
 			'taxonomies'     => '',   // which taxonomies (blank = the filter taxonomies).
 			'pill_colors'    => '#E9EEF8,#E3EFEC,#F6ECE0', // one color per filter family (cycled).
 			'pill_legend'    => 'yes', // show the family legend row above the pills.
-			'pill_limit'     => 10,    // pills shown before a "+N more" toggle (0 = all).
+			'pill_rows'      => 3,     // max rows of pills before a "+N more" toggle (JS-measured; 0 = off).
+			'pill_limit'     => 0,     // optional hard cap on pill count before "+N more" (0 = off).
 			'show_readmore'  => 'no',
 			'readmore_text'  => '',
 			'hover'          => 'zoom',
@@ -180,6 +181,7 @@ class DPG_Query {
 		$atts['fallback_image'] = sanitize_text_field( $atts['fallback_image'] );
 		$atts['taxonomies']     = self::clean_taxonomies( $atts['taxonomies'], $atts['post_type'] );
 		$atts['pill_colors']    = self::clean_color_list( $atts['pill_colors'], array( '#E9EEF8', '#E3EFEC', '#F6ECE0' ) );
+		$atts['pill_rows']      = max( 0, (int) $atts['pill_rows'] );
 		$atts['pill_limit']     = max( 0, (int) $atts['pill_limit'] );
 		$atts['excerpt_length'] = max( 0, (int) $atts['excerpt_length'] );
 		$atts['readmore_text']  = sanitize_text_field( $atts['readmore_text'] );

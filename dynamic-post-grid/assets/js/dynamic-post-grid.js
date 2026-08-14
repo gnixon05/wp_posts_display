@@ -6,7 +6,7 @@
  * no re-binding. Progressive enhancement: with JS off, the filter bar submits
  * as a normal GET form and pagination falls back to links.
  *
- * Version: 1.4.0
+ * Version: 1.4.1
  */
 (function () {
 	'use strict';
@@ -223,6 +223,7 @@
 		}).then(function (res) {
 			if (res && res.success) {
 				self.results.innerHTML = res.data.html;
+				capAllPills(self.results);
 				self.state.page = 1;
 				self.refreshLoadMore(res.data.max_pages, 1);
 			} else {
@@ -260,6 +261,7 @@
 				var grid = self.results.querySelector('[data-dpg-grid]');
 				if (grid && res.data.html) {
 					grid.insertAdjacentHTML('beforeend', res.data.html);
+					capAllPills(grid);
 				}
 				self.state.page = res.data.page || next;
 				if (res.data.done) {
@@ -410,8 +412,119 @@
 		});
 	}
 
-	// Delegated "+N more" / "Show less" toggle for taxonomy pills (bound once;
-	// works for cards injected via AJAX too).
+	/* ---- Taxonomy pills: cap to N rows, manage the "+N more" toggle ---- */
+
+	function ensureMoreButton(wrap) {
+		var btn = wrap.querySelector('.dpg-pill-more');
+		if (!btn) {
+			btn = document.createElement('button');
+			btn.type = 'button';
+			btn.className = 'dpg-pill-more';
+			wrap.appendChild(btn);
+		}
+		return btn;
+	}
+
+	// Measure the rendered pills and hide everything past `data-pill-rows` rows,
+	// then set the "+N more" count. Runs on load, resize and after AJAX updates.
+	function capPillRows(tax) {
+		if (!tax) {
+			return;
+		}
+		var rows = parseInt(tax.getAttribute('data-pill-rows'), 10);
+		var wrap = tax.querySelector('.dpg-tax-pills');
+		if (!rows || rows < 1 || !wrap) {
+			return;
+		}
+		var pills = Array.prototype.slice.call(wrap.querySelectorAll('.dpg-tax-pill'));
+		if (!pills.length) {
+			return;
+		}
+		var moreTpl = tax.getAttribute('data-more-tpl') || '+%d more';
+		var lessLabel = tax.getAttribute('data-less-label') || 'Show less';
+		var btn = wrap.querySelector('.dpg-pill-more');
+
+		// Fresh measurement: clear previous row-hides.
+		pills.forEach(function (p) { p.classList.remove('dpg-tax-pill--rowhide'); });
+
+		// Pills hidden by the optional server-side count cap.
+		var extraCount = pills.filter(function (p) {
+			return p.classList.contains('dpg-tax-pill--extra');
+		}).length;
+
+		// Expanded: show everything, button becomes "Show less".
+		if (tax.classList.contains('is-expanded')) {
+			if (btn) {
+				btn.hidden = false;
+				btn.textContent = lessLabel;
+			}
+			return;
+		}
+
+		// Measure only the pills that are not server-hidden.
+		var visible = pills.filter(function (p) {
+			return !p.classList.contains('dpg-tax-pill--extra');
+		});
+		if (!visible.length) {
+			if (btn) {
+				btn.hidden = extraCount <= 0;
+				if (extraCount > 0) { btn.textContent = moreTpl.replace('%d', extraCount); }
+			}
+			return;
+		}
+
+		// Hide the button during measurement so it doesn't add a row.
+		if (btn) { btn.hidden = true; }
+
+		var tops = [];
+		visible.forEach(function (p) {
+			if (tops.indexOf(p.offsetTop) === -1) { tops.push(p.offsetTop); }
+		});
+		tops.sort(function (a, b) { return a - b; });
+		var allowed = tops.slice(0, rows);
+
+		var hidden = 0;
+		visible.forEach(function (p) {
+			if (allowed.indexOf(p.offsetTop) === -1) {
+				p.classList.add('dpg-tax-pill--rowhide');
+				hidden++;
+			}
+		});
+
+		var total = hidden + extraCount;
+		if (total <= 0) {
+			if (btn) { btn.hidden = true; }
+			return;
+		}
+
+		btn = ensureMoreButton(wrap);
+		btn.hidden = false;
+		btn.textContent = moreTpl.replace('%d', total);
+
+		// The button itself may wrap to a new row; hide trailing pills until it fits.
+		var kept = visible.filter(function (p) { return !p.classList.contains('dpg-tax-pill--rowhide'); });
+		var guard = 0;
+		while (kept.length && guard < 200) {
+			var lastTop = kept[kept.length - 1].offsetTop;
+			if (btn.offsetTop <= lastTop) {
+				break;
+			}
+			var last = kept.pop();
+			last.classList.add('dpg-tax-pill--rowhide');
+			total++;
+			btn.textContent = moreTpl.replace('%d', total);
+			guard++;
+		}
+	}
+
+	function capAllPills(root) {
+		(root || document).querySelectorAll('.dpg-tax').forEach(function (tax) {
+			capPillRows(tax);
+		});
+	}
+	DPG.capAllPills = capAllPills;
+
+	// Delegated "+N more" / "Show less" toggle (bound once; survives AJAX cards).
 	function bindPillToggle() {
 		if (DPG._pillBound) {
 			return;
@@ -427,11 +540,14 @@
 			if (!tax) {
 				return;
 			}
-			var expanded = tax.classList.toggle('is-expanded');
-			btn.textContent = expanded
-				? (btn.getAttribute('data-less-label') || 'Show less')
-				: (btn.getAttribute('data-more-label') || btn.textContent);
+			tax.classList.toggle('is-expanded');
+			capPillRows(tax);
 		});
+
+		// Re-measure on resize (debounced) and once fonts/layout settle.
+		var onResize = debounce(function () { capAllPills(document); }, 150);
+		window.addEventListener('resize', onResize);
+		window.addEventListener('load', function () { capAllPills(document); });
 	}
 
 	function init() {
@@ -444,6 +560,7 @@
 			}
 			root.__dpg = new Instance(root);
 		});
+		capAllPills(document);
 	}
 
 	DPG.init = init;
